@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уроци по C++ - Бъдеще за таланти</title>
+    
+    <!-- Google Fonts: Nunito and Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0f111a;
+            --surface-color: #1a1d2d;
+            --glass-bg: rgba(26, 29, 45, 0.6);
+            --primary: #00f0ff;    /* Cyan / Neon Blue */
+            --secondary: #f72585;  /* Neon Pink */
+            --accent: #ffcc00;     /* Yellow */
+            --green: #00f58c;      /* Neon Green */
+            --text-light: #ffffff;
+            --text-muted: #94a3b8;
+            --font-main: 'Nunito', sans-serif;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(15, 17, 26, 0.9);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .bg-element {
+            position: absolute;
+            font-family: var(--font-code);
+            color: rgba(255, 255, 255, 0.03);
+            font-weight: bold;
+            z-index: 0;
+            user-select: none;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rot)); }
+            50% { transform: translateY(-30px) rotate(calc(var(--rot) + 10deg)); }
+        }
+
+        .bg-1 { top: 15%; left: 5%; font-size: 100px; --rot: -15deg; }
+        .bg-2 { top: 25%; right: 10%; font-size: 70px; --rot: 25deg; animation-delay: -2s;}
+        .bg-3 { top: 60%; left: 8%; font-size: 90px; --rot: 10deg; animation-delay: -5s;}
+        .bg-4 { bottom: 10%; right: 5%; font-size: 120px; --rot: -20deg; animation-delay: -7s;}
+
+        .page-content {
+            flex: 1;
+            padding: 120px 20px 60px; /* Padding top accounts for fixed header */
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header h1 {
+            font-size: clamp(36px, 6vw, 54px);
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+            text-transform: uppercase;
+        }
+
+        .page-header p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 600;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .lesson-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: 4px solid var(--card-color, var(--primary));
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(var(--card-color-rgb), 0.2);
+            background: rgba(30, 34, 50, 0.8);
+        }
+
+        .lesson-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: var(--font-code);
+            font-size: 40px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.05);
+            transition: color 0.3s ease;
+        }
+
+        .lesson-card:hover .lesson-number {
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 20px;
+            color: var(--card-color, var(--primary));
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.02);
+            transition: transform 0.3s ease;
+        }
+
+        .lesson-card:hover .icon-wrapper {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .lesson-card h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+
+        .lesson-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        .btn-lesson {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-light);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
+        }
+
+        .lesson-card:hover .btn-lesson {
+            background: var(--card-color, var(--primary));
+            color: var(--bg-color);
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(var(--card-color-rgb), 0.3);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .page-header h1 {
+                font-size: 32px;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .copyright {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-layer-group"></i> Бъдеще за таланти
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Начало</a></li>
+                <li><a href="lessons-e.html" class="active">Уроци</a></li>
+                <li><a href="tasks-e.html">Задачи</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="bg-element bg-1">{ }</div>
+    <div class="bg-element bg-2">cin &gt;&gt;</div>
+    <div class="bg-element bg-3">if( )</div>
+    <div class="bg-element bg-4">&lt;/&gt;</div>
+
+    <main class="page-content">
+        <div class="page-header">
+            <h1>Уроци по C++</h1>
+            <p>Готов ли си да станеш програмист? Избери урок и започни своето приключение в света на кода!</p>
+        </div>
+
+        <div class="lessons-grid">
+            
+            <!-- Lesson 1 -->
+            <div class="lesson-card" style="--card-color: var(--primary); --card-color-rgb: 0, 240, 255;">
+                <div class="lesson-number">01</div>
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-hand-spock"></i>
+                </div>
+                <h3>Запознаване със среда за програмиране CodeBlocks</h3>
+                <p>Научи как да "заговориш" на компютъра! Ще напишем първата ти истинска програма, която извежда съобщение на екрана.</p>
+                <a href="lessons/lesson1-codeblocks.html" class="btn-lesson">Започни урока <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Lesson 2 -->
+            <div class="lesson-card" style="--card-color: var(--accent); --card-color-rgb: 255, 204, 0;">
+                <div class="lesson-number">02</div>
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <h3>Работа с цели числа</h3>
+                <p>Компютърът е истински математически гений! Ще се научим как да съхраняваме цели числа и да караме програмата да смята вместо нас.</p>
+                <a href="lessons/lesson2-numbers.html" class="btn-lesson">Започни урока <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Lesson 3 -->
+            <div class="lesson-card" style="--card-color: var(--green); --card-color-rgb: 0, 245, 140;">
+                <div class="lesson-number">03</div>
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <h3>Етапи при решаване на задачи по програмиране</h3>
+                <p>Всяка велика програма започва с добър план! Ще научим кои са най-важните стъпки – от прочитането на условието до написването и тестването на готовия код.</p>
+                <a href="lessons/lesson3-steps.html" class="btn-lesson">Започни урока <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Добавете този блок за дъно (footer) -->
+    <footer>
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </footer>
+
+</body>
+</html>

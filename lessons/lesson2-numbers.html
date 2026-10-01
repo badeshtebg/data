@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 2: Работа с цели числа - Бъдеще за таланти</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: #7f8c8d; font-size: 1.1rem; text-transform: uppercase; margin-top: 0; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Блокове за код в текста */
+        .inline-code-block { background-color: #f8f9fa; border-left: 4px solid #7f8c8d; padding: 10px 15px; font-family: Consolas, monospace; font-size: 0.9rem; margin-bottom: 15px; white-space: pre-wrap; color: #2c3e50;}
+        
+        /* Таблици в текста */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; color: #2c3e50; }
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #3498db; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { flex: 0 0 auto; border: 2px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background-color: #ecf0f1; position: relative; min-height: 230px; padding: 15px; gap: 15px;}
+        
+        .step-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box { display: none; background-color: #0c0c0c; border: 2px solid #555; border-top: 20px solid #ccc; border-radius: 5px 5px 0 0; padding: 10px; width: 90%; max-width: 450px; min-height: 70px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; position: relative; box-shadow: 0 8px 15px rgba(0,0,0,0.3); margin-top: auto;}
+        .console-box::before { content: "C:\\Windows\\System32\\cmd.exe"; position: absolute; top: -18px; left: 10px; color: #333; font-size: 11px; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1.05rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 50px; max-width: 90%;}
+        
+        /* Зона за код */
+        .code-container { background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 8px; font-family: Consolas, monospace; font-size: 14px; overflow-x: auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); flex-grow: 1; min-height: 200px; max-height: 300px; overflow-y: auto;}
+        .code-line { padding: 4px 8px; margin: 1px 0; border-radius: 4px; transition: background-color 0.3s; white-space: pre;}
+        .active-line { background-color: #3e4451; border-left: 4px solid #98c379; color: #ffffff; font-weight: bold; }
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #3498db; color: white; font-size: 15px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #2980b9; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../lessons-e.html" class="back-to-home">← Назад към уроците</a>
+            
+            <h1>Работа с цели числа<span class="cite-hidden">[cite: 5]</span></h1>
+            <h2>Първи стъпки в програмирането<span class="cite-hidden">[cite: 5]</span></h2>
+            
+            <h3>Как се отпечатват цели числа?<span class="cite-hidden">[cite: 5]</span></h3>
+            <p>Ако се налага да се отпечата (изведе) на екрана цяло число, отново се използва командата <code>cout</code>:<span class="cite-hidden">[cite: 5]</span></p>
+            <div class="inline-code-block">cout &lt;&lt; число;</div>
+            <p>Не е необходимо да се поставят кавички около числото, макар че с "" пак ще стане.<span class="cite-hidden">[cite: 5]</span></p>
+
+            <h3>Основни аритметични действия – знаци<span class="cite-hidden">[cite: 5]</span></h3>
+            <p>Става въпрос за действията събиране, изваждане, умножение и деление.<span class="cite-hidden">[cite: 5]</span></p>
+            <table>
+                <tr><th>Действие</th><th>Знак</th><th>Запис</th></tr>
+                <tr><td>Събиране</td><td>+</td><td>2 + 3</td></tr>
+                <tr><td>Изваждане</td><td>-</td><td>8 - 5</td></tr>
+                <tr><td>Умножение</td><td>*</td><td>3 * 5</td></tr>
+                <tr><td>Деление</td><td>/</td><td>7 / 8</td></tr>
+            </table>
+
+            <h3>Отпечатване на резултат от математическо действие<span class="cite-hidden">[cite: 5]</span></h3>
+            <p>Когато искаме да „накараме“ програмата ни да пресметне и отпечата резултат от някакво математическо действие, използваме следното:<span class="cite-hidden">[cite: 5]</span></p>
+            <div class="inline-code-block">cout &lt;&lt; математическо действие &lt;&lt; endl;</div>
+            <p>Например:<span class="cite-hidden">[cite: 5]</span></p>
+            <div class="inline-code-block">cout &lt;&lt; 12 + 19 &lt;&lt; endl;<br>cout &lt;&lt; 125 * 17 &lt;&lt; endl;</div>
+            <p>Не се използват "", защото иначе ще се изведе изразът като запис, а не резултатът от изпълнението, тоест:<span class="cite-hidden">[cite: 5]</span></p>
+            <ul>
+                <li><code>cout &lt;&lt; "125 * 17" &lt;&lt; endl;</code> Това ще отпечата 125 * 17<span class="cite-hidden">[cite: 5]</span></li>
+                <li><code>cout &lt;&lt; 125 * 17 &lt;&lt; endl;</code> Това ще отпечата 2125<span class="cite-hidden">[cite: 5]</span></li>
+            </ul>
+
+            <h3>Задача<span class="cite-hidden">[cite: 5]</span></h3>
+            <p>Съставете програма, която отпечатва на отделни редове резултатите от следните математически действия:<span class="cite-hidden">[cite: 5]</span></p>
+            <ul>
+                <li>36 + 8<span class="cite-hidden">[cite: 5]</span></li>
+                <li>36 – 8<span class="cite-hidden">[cite: 5]</span></li>
+                <li>36 . 8<span class="cite-hidden">[cite: 5]</span></li>
+                <li>36 : 8<span class="cite-hidden">[cite: 5]</span></li>
+            </ul>
+
+            <h3>Особености на делението с цели числа в C++<span class="cite-hidden">[cite: 5]</span></h3>
+            <p>Според езика C++:<span class="cite-hidden">[cite: 5]</span></p>
+            <ul>
+                <li>36 / 8 прави 4, а не 4,5<span class="cite-hidden">[cite: 5]</span></li>
+                <li>7 / 8 прави 0, а не 0.875<span class="cite-hidden">[cite: 5]</span></li>
+            </ul>
+            <p>Това е така, защото когато и делимото и делителят са цели числа, автоматично се преминава в режим на работа „цели числа“ и от резултатите се „изхвърля“ дробната част, без да се прави закръгляне.<span class="cite-hidden">[cite: 5]</span></p>
+            <p>Например 39 : 5 = 7,8 според математиката, закръглено до цяло число би било 8, но в езика C++ 39 / 5 ще прави само 7.<span class="cite-hidden">[cite: 5]</span></p>
+
+            <h3>Математически изрази<span class="cite-hidden">[cite: 5]</span></h3>
+            <p>Няколко числа, свързани със знаци за математически действия, водят до образуването на математически израз в езика C++.<span class="cite-hidden">[cite: 5]</span></p>
+            <p>Примери:<span class="cite-hidden">[cite: 5]</span></p>
+            <ul>
+                <li>100 – 3 * 27<span class="cite-hidden">[cite: 5]</span></li>
+                <li>99 / 4 – 11 * 0<span class="cite-hidden">[cite: 5]</span></li>
+            </ul>
+
+            <h3>Ред на действията<span class="cite-hidden">[cite: 5]</span></h3>
+            <p>Когато се налага в рамките на един математически израз да се промени редът за изпълнение на действията и тук (както в математиката) се използват скобите () – така наречените кръгли скоби.<span class="cite-hidden">[cite: 5]</span></p>
+            <p>И в езика C++, както и в математиката, ще запишем (9 – 7) * 11, за да сме сигурни, че първо ще се извърши изваждането, а след това умножението.<span class="cite-hidden">[cite: 5]</span></p>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Отпечатване</button>
+            <button class="tab-btn" onclick="switchTab(1)">Смятане</button>
+            <button class="tab-btn" onclick="switchTab(2)">Деление</button>
+            <button class="tab-btn" onclick="switchTab(3)">Скоби</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🎮</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="code-container" id="codeContainer">
+            <!-- Кодът се зарежда динамично -->
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Данни за различните табове
+        const tabData = [
+            {
+                // Таб 0: Отпечатване
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "",
+                    "int main()",
+                    "{",
+                    "    cout << 2026 << endl;",
+                    "    return 0;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "👋", text: "Готов ли си да видим как се печатат числа? Кликни напред!", showCon: false, conText: "" },
+                    { lines: [5], icon: "🖨️", text: "Стъпка 1: Използваме cout, за да отпечатаме числото 2026. Забележи, че няма нужда от кавички около числото!", showCon: true, conText: "2026" },
+                    { lines: [6], icon: "🏁", text: "Стъпка 2: Програмата приключи успешно.", showCon: true, conText: "2026\n\nProcess returned 0 (0x0)" }
+                ]
+            },
+            {
+                // Таб 1: Смятане (с и без кавички)
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "",
+                    "int main()",
+                    "{",
+                    "    cout << 125 * 17 << endl;",
+                    "    cout << \"125 * 17\" << endl;",
+                    "    return 0;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "🧮", text: "Компютърът е страхотен математик! Нека му дадем задача.", showCon: false, conText: "" },
+                    { lines: [5], icon: "🧠", text: "Стъпка 1: Пишем 125 * 17 без кавички. Компютърът разбира, че това е задача, пресмята я и показва резултата!", showCon: true, conText: "2125" },
+                    { lines: [6], icon: "📝", text: "Стъпка 2: Тук сложихме кавички \" \". Затова компютърът не смята, а го приема като обикновен текст.", showCon: true, conText: "2125\n125 * 17" },
+                    { lines: [7], icon: "🏁", text: "Стъпка 3: Край на програмата.", showCon: true, conText: "2125\n125 * 17\n\nProcess returned 0 (0x0)" }
+                ]
+            },
+            {
+                // Таб 2: Деление
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "",
+                    "int main()",
+                    "{",
+                    "    cout << 36 / 8 << endl;",
+                    "    cout << 39 / 5 << endl;",
+                    "    return 0;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "🍰", text: "Делението в програмирането има една малка тайна! Нека я разкрием.", showCon: false, conText: "" },
+                    { lines: [5], icon: "✂️", text: "Стъпка 1: 36 делено на 8. Компютърът дели само цели числа и направо отрязва дробната част (остатъка). Резултатът е 4!", showCon: true, conText: "4" },
+                    { lines: [6], icon: "🗑️", text: "Стъпка 2: 39 делено на 5 е 7.8 в математиката, но тук \".8\" просто се изхвърля. Не се закръгля! Резултатът е 7.", showCon: true, conText: "4\n7" },
+                    { lines: [7], icon: "🏁", text: "Стъпка 3: Готови сме!", showCon: true, conText: "4\n7\n\nProcess returned 0 (0x0)" }
+                ]
+            },
+            {
+                // Таб 3: Скоби
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "",
+                    "int main()",
+                    "{",
+                    "    cout << 100 - 3 * 27 << endl;",
+                    "    cout << (9 - 7) * 11 << endl;",
+                    "    return 0;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "⚖️", text: "Кой е пръв? Редът на действията е като в математиката.", showCon: false, conText: "" },
+                    { lines: [5], icon: "🥇", text: "Стъпка 1: Умножението е по-силно от изваждането. Първо се смята 3 * 27, после се вади от 100.", showCon: true, conText: "19" },
+                    { lines: [6], icon: "🛡️", text: "Стъпка 2: Скобите са като вълшебен щит! Те казват \"Първо сметни мен!\". Така първо вадим 9 - 7, после умножаваме по 11.", showCon: true, conText: "19\n22" },
+                    { lines: [7], icon: "🏁", text: "Стъпка 3: Край на магията с числата!", showCon: true, conText: "19\n22\n\nProcess returned 0 (0x0)" }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function loadTabCode() {
+            const container = document.getElementById('codeContainer');
+            container.innerHTML = '';
+            
+            // Генерираме HTML за кода на текущия таб
+            tabData[currentTab].code.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.id = 'line-' + index;
+                div.innerHTML = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                container.appendChild(div);
+            });
+        }
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            // Обновяване на активния бутон (CSS)
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            loadTabCode();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            let firstLine = null;
+            step.lines.forEach(lineNum => {
+                let el = document.getElementById('line-' + lineNum);
+                if(el) {
+                    el.classList.add('active-line');
+                    if(!firstLine) firstLine = el;
+                }
+            });
+            
+            if(firstLine) {
+                firstLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            document.getElementById('vizText').innerText = step.text;
+            
+            // Анимация на иконката
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        // Логика за преоразмеряване на панелите
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        // Инициализация при първо зареждане
+        loadTabCode();
+        updateUI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 3: Етапи при решаване на задачи - Бъдеще за таланти</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: #7f8c8d; font-size: 1.1rem; text-transform: uppercase; margin-top: 0; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Блокове за код в текста */
+        .inline-code-block { background-color: #f8f9fa; border-left: 4px solid #7f8c8d; padding: 10px 15px; font-family: Consolas, monospace; font-size: 0.9rem; margin-bottom: 15px; white-space: pre-wrap; color: #2c3e50;}
+        
+        /* Таблици в текста */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; color: #2c3e50; }
+
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #e8f4fd; border-left: 4px solid #3498db; padding: 15px; margin-top: 15px; border-radius: 4px; color: #2c3e50; font-size: 0.95rem; }
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #3498db; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { flex: 0 0 auto; border: 2px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background-color: #ecf0f1; position: relative; min-height: 230px; padding: 15px; gap: 15px;}
+        
+        .step-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box { display: none; background-color: #0c0c0c; border: 2px solid #555; border-top: 20px solid #ccc; border-radius: 5px 5px 0 0; padding: 10px; width: 90%; max-width: 450px; min-height: 70px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; position: relative; box-shadow: 0 8px 15px rgba(0,0,0,0.3); margin-top: auto;}
+        .console-box::before { content: "C:\\Windows\\System32\\cmd.exe"; position: absolute; top: -18px; left: 10px; color: #333; font-size: 11px; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1.05rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 50px; max-width: 90%;}
+        
+        /* Зона за код */
+        .code-container { background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 8px; font-family: Consolas, monospace; font-size: 14px; overflow-x: auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); flex-grow: 1; min-height: 200px; max-height: 300px; overflow-y: auto;}
+        .code-line { padding: 4px 8px; margin: 1px 0; border-radius: 4px; transition: background-color 0.3s; white-space: pre;}
+        .active-line { background-color: #3e4451; border-left: 4px solid #98c379; color: #ffffff; font-weight: bold; }
+        .error-line { background-color: #7b241c; border-left: 4px solid #e74c3c; color: #ffffff; font-weight: bold; }
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #3498db; color: white; font-size: 15px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #2980b9; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../lessons-e.html" class="back-to-home">← Назад към уроците</a>
+            
+            <h1>Етапи при решаване на задачи по програмиране<span class="cite-hidden">[cite: 6]</span></h1>
+            <h2>Първи стъпки в програмирането<span class="cite-hidden">[cite: 6]</span></h2>
+            
+            <h3>Задача: Програма, която намира лицето (площта) на правоъгълник<span class="cite-hidden">[cite: 6]</span></h3>
+            <p><strong>Условие:</strong> Да се напише програма, която въвежда от клавиатурата две цели числа a и b – страните на правоъгълник и отпечатва лицето му по формулата 𝑆=𝑎.𝑏<span class="cite-hidden">[cite: 6]</span></p>
+            <table>
+                <tr>
+                    <th>Примерен вход<span class="cite-hidden">[cite: 6]</span></th>
+                    <th>Примерен изход<span class="cite-hidden">[cite: 6]</span></th>
+                </tr>
+                <tr>
+                    <td>5 4<span class="cite-hidden">[cite: 6]</span></td>
+                    <td>20<span class="cite-hidden">[cite: 6]</span></td>
+                </tr>
+            </table>
+
+            <h3>Създаване на математически модел на задачата<span class="cite-hidden">[cite: 6]</span></h3>
+            <p>На този етап е необходимо да се уточни математическият модел на дадената задача.<span class="cite-hidden">[cite: 6]</span> Кои ще бъдат похватите и формулите?<span class="cite-hidden">[cite: 6]</span> В конкретния случай, базирайки се на знанията си по математика може да се предложи следното:<span class="cite-hidden">[cite: 6]</span></p>
+            <ul>
+                <li>Формулата, която намира решение на задачата е 𝑆=𝑎.𝑏<span class="cite-hidden">[cite: 6]</span></li>
+                <li>По този начин построихме математическия модел.<span class="cite-hidden">[cite: 6]</span></li>
+            </ul>
+
+            <h3>Създаване на информационен модел на задачата<span class="cite-hidden">[cite: 6]</span></h3>
+            <p>За да бъде решена една задача по програмиране, трябва да се уточнят още и данните, които ще постъпят на входа в програмата, както и данните, които ще бъдат изведени като резултат от нея.<span class="cite-hidden">[cite: 6]</span> Програмистът трябва да е наясно предварително с основните величини, които използва програмата му.<span class="cite-hidden">[cite: 6]</span></p>
+            <p>Ето как ще изглежда информационният модел на разглежданата от нас задача:<span class="cite-hidden">[cite: 6]</span></p>
+            <ul>
+                <li><strong>Входни данни:</strong> Променливите a и b.<span class="cite-hidden">[cite: 6]</span> Те са цели числа.<span class="cite-hidden">[cite: 6]</span> Програмата трябва да получи стойностите им от потребителя като вход.<span class="cite-hidden">[cite: 6]</span></li>
+                <li><strong>Изходни данни:</strong> Променливата s.<span class="cite-hidden">[cite: 6]</span> Тя също е цяло число.<span class="cite-hidden">[cite: 6]</span> Програмата я извежда след необходимото пресмятане.<span class="cite-hidden">[cite: 6]</span></li>
+            </ul>
+
+            <h3>Описание на решението<span class="cite-hidden">[cite: 6]</span></h3>
+            <ul>
+                <li>Въвеждат се дължините на страните на правоъгълника a и b.<span class="cite-hidden">[cite: 6]</span></li>
+                <li>Пресмята се лицето на правоъгълника: 𝑆=𝑎.𝑏<span class="cite-hidden">[cite: 6]</span></li>
+                <li>Извежда се резултатът s.<span class="cite-hidden">[cite: 6]</span></li>
+            </ul>
+
+            <h3>Кодиране на решението<span class="cite-hidden">[cite: 6]</span></h3>
+            <div class="inline-code-block">#include &lt;iostream&gt;
+using namespace std;
+int main()
+{
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+    int s = a * b;
+    cout &lt;&lt; s &lt;&lt; endl;
+}</div>
+
+            <h3>Тестване на решението и отстраняване на синтактичните грешките<span class="cite-hidden">[cite: 6]</span></h3>
+            <p>Видове синтактични грешки:<span class="cite-hidden">[cite: 6]</span></p>
+            <ul>
+                <li>Пропускане на точка и запетая<span class="cite-hidden">[cite: 6]</span></li>
+                <li>Пропускане на запетая между променливите при обявяването им<span class="cite-hidden">[cite: 6]</span></li>
+                <li>Пропускане на скоба и др.<span class="cite-hidden">[cite: 6]</span></li>
+            </ul>
+            <p>С помощта на CodeBlocks решението се въвежда в паметта на компютъра и се тества.<span class="cite-hidden">[cite: 6]</span></p>
+
+            <h3>Тестване на програмата за логически грешки и отстраняването им (1)<span class="cite-hidden">[cite: 6]</span></h3>
+            <p>Примери за логически грешки:<span class="cite-hidden">[cite: 6]</span></p>
+            <ul>
+                <li>Сбъркана формула, например: <code>int s = a * a;</code><span class="cite-hidden">[cite: 6]</span></li>
+                <li>Сбъркана поредност на инструкциите, например:<br>
+                    <code>int a, b;</code><br>
+                    <code>int s = a * b;</code><br>
+                    <code>cin &gt;&gt; a &gt;&gt; b;</code><br>
+                    <code>cout &lt;&lt; s &lt;&lt; endl;</code><span class="cite-hidden">[cite: 6]</span><br>
+                    В този случай програмата ще изведе 0.<span class="cite-hidden">[cite: 6]</span>
+                </li>
+            </ul>
+            <div class="hint-box">
+                <strong>Важно:</strong> При логическите грешки програмата не показва съобщение за грешка, а просто извежда грешен резултат.<span class="cite-hidden">[cite: 6]</span>
+            </div>
+
+            <h3>Тестване на програмата за логически грешки и отстраняването им (2)<span class="cite-hidden">[cite: 6]</span></h3>
+            <p>За да се тества решението за логически грешки се избират специфични входни данни, които трябва да определят дали алгоритъмът работи коректно.<span class="cite-hidden">[cite: 6]</span> Примерни входни данни се дават в условието на задачата.<span class="cite-hidden">[cite: 6]</span> В нашия случай това са числата 5 и 4, а резултатът трябва да е 20.<span class="cite-hidden">[cite: 6]</span></p>
+
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Условие и Модели</button>
+            <button class="tab-btn" onclick="switchTab(1)">Алгоритъм</button>
+            <button class="tab-btn" onclick="switchTab(2)">Кодиране</button>
+            <button class="tab-btn" onclick="switchTab(3)">Синтактични грешки</button>
+            <button class="tab-btn" onclick="switchTab(4)">Логически грешки</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🎓</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="code-container" id="codeContainer">
+            <!-- Кодът се зарежда динамично -->
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Данни за различните табове
+        const tabData = [
+            {
+                // Таб 0: Условие и Модели
+                code: [
+                    "// ЗАДАЧА: Лице на правоъгълник",
+                    "",
+                    "// ВХОД:",
+                    "// Страни a = 5 и b = 4",
+                    "",
+                    "// МАТЕМАТИЧЕСКИ МОДЕЛ:",
+                    "// Формула: S = a * b",
+                    "",
+                    "// ИНФОРМАЦИОНЕН МОДЕЛ:",
+                    "// a, b и s ще бъдат цели числа"
+                ],
+                steps: [
+                    { lines: [], icon: "📝", text: "Първата стъпка е да прочетем внимателно условието: търсим лицето на правоъгълник.", showCon: false, conText: "" },
+                    { lines: [2, 3], icon: "📥", text: "Уточняваме входа: ще ни трябват две числа, например 5 и 4.", showCon: false, conText: "" },
+                    { lines: [5, 6], icon: "📐", text: "Математически модел: от математиката знаем, че лицето е a по b (S = a * b).", showCon: false, conText: "" },
+                    { lines: [8, 9], icon: "📦", text: "Информационен модел: ще ни трябват три кутийки за цели числа (a, b и s).", showCon: false, conText: "" }
+                ]
+            },
+            {
+                // Таб 1: Алгоритъм
+                code: [
+                    "СТЪПКИ ЗА РЕШЕНИЕ (АЛГОРИТЪМ):",
+                    "",
+                    "1. Въвеждаме дължините на страните a и b",
+                    "2. Пресмятаме лицето s = a * b",
+                    "3. Извеждаме резултата s на екрана"
+                ],
+                steps: [
+                    { lines: [], icon: "🗺️", text: "След като сме анализирали задачата, правим алгоритъм (план за действие).", showCon: false, conText: "" },
+                    { lines: [2], icon: "⌨️", text: "Първа стъпка: Потребителят трябва да въведе дължините на страните.", showCon: false, conText: "" },
+                    { lines: [3], icon: "⚙️", text: "Втора стъпка: Компютърът пресмята лицето по нашата формула.", showCon: false, conText: "" },
+                    { lines: [4], icon: "📤", text: "Трета стъпка: Компютърът извежда готовия резултат на екрана.", showCon: false, conText: "" }
+                ]
+            },
+            {
+                // Таб 2: Кодиране
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int a, b;",
+                    "    cin >> a >> b;",
+                    "    int s = a * b;",
+                    "    cout << s << endl;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "💻", text: "Време е да превърнем плана в истински C++ код! Да видим как работи.", showCon: false, conText: "" },
+                    { lines: [4], icon: "📦", text: "Създаваме кутийките a и b за страните.", showCon: false, conText: "" },
+                    { lines: [5], icon: "⏳", text: "Компютърът чака! Въвеждаме числата 5 и 4 от клавиатурата.", showCon: true, conText: "5 4" },
+                    { lines: [6], icon: "🧠", text: "Създаваме кутийка s и компютърът пресмята вътре 5 * 4.", showCon: true, conText: "5 4" },
+                    { lines: [7], icon: "🎉", text: "Извеждаме резултата 20 на екрана! Задачата е решена успешно.", showCon: true, conText: "5 4\n20" }
+                ]
+            },
+            {
+                // Таб 3: Синтактични грешки
+                code: [
+                    "int main()",
+                    "{",
+                    "    int a, b   // Внимание: Липсва точка и запетая!",
+                    "    cin >> a >> b;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "🐛", text: "Синтактична грешка! Това означава, че сме нарушили правилата за писане на езика.", showCon: false, conText: "" },
+                    { lines: [2], icon: "🔴", text: "Забравили сме точка и запетая на ред 3! Компютърът е объркан и отказва да стартира програмата.", showCon: true, conText: "error: expected ';' before 'cin'", isError: true }
+                ]
+            },
+            {
+                // Таб 4: Логически грешки
+                code: [
+                    "int main()",
+                    "{",
+                    "    int a, b;",
+                    "    int s = a * b;    // Грешно място! Смятаме преди да имаме числа.",
+                    "    cin >> a >> b;",
+                    "    cout << s << endl;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "🤔", text: "Логическа грешка! Кодът е написан правилно (няма червени грешки), но работи грешно.", showCon: false, conText: "" },
+                    { lines: [3], icon: "⚠️", text: "Тук пресмятаме s = a * b, ПРЕДИ потребителят да е въвел a и b! В кутийките няма нищо.", showCon: false, conText: "" },
+                    { lines: [4], icon: "📥", text: "Едва сега въвеждаме 5 и 4...", showCon: true, conText: "5 4" },
+                    { lines: [5], icon: "❌", text: "Извеждаме s, но тъй като сметнахме твърде рано, резултатът е 0! Винаги следвай правилния ред.", showCon: true, conText: "5 4\n0" }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function loadTabCode() {
+            const container = document.getElementById('codeContainer');
+            container.innerHTML = '';
+            
+            tabData[currentTab].code.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.id = 'line-' + index;
+                div.innerHTML = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                container.appendChild(div);
+            });
+        }
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            loadTabCode();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.code-line').forEach(el => {
+                el.classList.remove('active-line');
+                el.classList.remove('error-line');
+            });
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            let firstLine = null;
+            step.lines.forEach(lineNum => {
+                let el = document.getElementById('line-' + lineNum);
+                if(el) {
+                    if(step.isError) {
+                        el.classList.add('error-line');
+                    } else {
+                        el.classList.add('active-line');
+                    }
+                    if(!firstLine) firstLine = el;
+                }
+            });
+            
+            if(firstLine) {
+                firstLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            document.getElementById('vizText').innerText = step.text;
+            
+            // Анимация на иконката
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+                // Ако е грешка, правим текста в конзолата червен за по-добър ефект
+                if(step.isError) {
+                    conOut.style.color = '#ff6b6b';
+                } else {
+                    conOut.style.color = '#fff';
+                }
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        // Логика за преоразмеряване на панелите
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        // Инициализация при първо зареждане
+        loadTabCode();
+        updateUI();
+    </script>
+</body>
+</html>

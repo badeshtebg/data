@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 1: Запознаване със среда за програмиране CodeBlocks - Бъдеще за таланти</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #f4f4f9;
+            overflow: hidden;
+        }
+
+        /* Панели */
+        .panel {
+            padding: 25px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-panel {
+            border-right: 2px solid #ddd;
+            background-color: #ffffff;
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background-color: #fdfdfd;
+            flex: 1;
+            min-width: 20%;
+            justify-content: center;
+        }
+
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize;
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+
+        .resizer:hover,
+        .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            font-size: 1.2rem;
+        }
+
+        p,
+        ul,
+        li,
+        ol {
+            line-height: 1.6;
+            color: #333;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        /* Блокове за код в текста */
+        .inline-code-block {
+            background-color: #f8f9fa;
+            border-left: 4px solid #7f8c8d;
+            padding: 10px 15px;
+            font-family: Consolas, monospace;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            color: #2c3e50;
+        }
+
+        /* Подсказка / Обобщение */
+        .hint-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area {
+            flex: 0 0 auto;
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: #ecf0f1;
+            position: relative;
+            min-height: 250px;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        /* Иконка за стъпките */
+        .step-icon {
+            font-size: 4.5rem;
+            line-height: 1;
+            margin-bottom: 10px;
+            filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box {
+            display: none;
+            background-color: #0c0c0c;
+            border: 2px solid #555;
+            border-top: 20px solid #ccc;
+            border-radius: 5px 5px 0 0;
+            padding: 10px;
+            width: 90%;
+            max-width: 450px;
+            min-height: 80px;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 13px;
+            position: relative;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            margin-top: auto;
+        }
+
+        .console-box::before {
+            content: "C:\\Windows\\System32\\cmd.exe";
+            position: absolute;
+            top: -18px;
+            left: 10px;
+            color: #333;
+            font-size: 11px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: bold;
+        }
+
+        .console-output {
+            color: #fff;
+            font-weight: bold;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .viz-text {
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            min-height: 65px;
+            max-width: 90%;
+        }
+
+        /* Зона за код */
+        .code-container {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            flex-grow: 0;
+            min-height: 220px;
+            max-height: 250px;
+        }
+
+        .code-line {
+            padding: 4px 8px;
+            margin: 1px 0;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            white-space: pre;
+        }
+
+        .active-line {
+            background-color: #3e4451;
+            border-left: 4px solid #98c379;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* Контроли */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../lessons-e.html" class="back-to-home">← Назад към уроците</a>
+
+            <h1>Запознаване със среда за програмиране CodeBlocks</h1>
+            <h2>Първи стъпки в програмирането</h2>
+
+            <h3>Що е програмиране?</h3>
+            <ul>
+                <li>Програмите, които компютърът изпълнява, са последователности от инструкции</li>
+                <li>Програмистите пишат своите програми на езици за програмиране, които са разбираеми за тях</li>
+                <li>Програма, написана на език за програмиране, наричаме изходна програма</li>
+            </ul>
+
+            <div class="hint-box">
+                <strong>Състезателна информатика</strong>
+                <ul>
+                    <li>Наука</li>
+                    <li>Спорт</li>
+                    <li>Изкуство</li>
+                    <li>Професия</li>
+                </ul>
+            </div>
+
+            <h3>Средата за програмиране CodeBlocks</h3>
+            <p>Инсталационен файл на средата за програмиране CodeBlocks ще бъде качен в Google Classroom на групата.<br>
+                Можете да го изтеглите безплатно и от официалния сайт: <a href="https://www.codeblocks.org/"
+                    target="_blank">https://www.codeblocks.org/</a></p>
+
+            <h3>Създаване на нов файл с разширение .cpp</h3>
+            <ol>
+                <li><strong>File &rarr; New &rarr; File…</strong></li>
+                <li>Изберете бутон <strong>Go…</strong> и след това <strong>Next</strong></li>
+                <li>После изберете <strong>C++</strong> и потвърдете с <strong>Next</strong></li>
+                <li>Чрез бутона <strong>“…”</strong> задаваме път до папката за съхранение и име на файла.</li>
+                <li>След това потвърждаваме с бутона <strong>Finish</strong>.</li>
+            </ol>
+
+            <h3>Компилиране и изпълнение на програми</h3>
+            <ul>
+                <li><strong>Build &rarr; Run</strong> (Ctrl + F10)</li>
+                <li><strong>Build &rarr; Build and run</strong> (F9)</li>
+            </ul>
+
+            <h3>Файлове, създавани от средата</h3>
+            <ul>
+                <li><strong>Файлове с разширение CPP:</strong> Съдържат текстовете на изходните програми и се получават
+                    след изпълнението на командата File &rarr; Save или чрез натискане на клавиша Ctrl + S.</li>
+                <li><strong>Файлове с разширение EXE:</strong> Съдържат изпълними програми, еквивалентни на написаните.
+                    Създават се при компилиране на програма.</li>
+            </ul>
+
+            <h3>Работа с компютър</h3>
+            <p><strong>Задача: Извеждане на текст на екрана</strong></p>
+            <ul>
+                <li>В папка e_cpp_name съдайте програма с име p1.cpp.</li>
+                <li>Въведете в средата за програмиране CodeBlocks следния код на програмата</li>
+                <li>Компилирайте програмата с натискане на клавиш F9</li>
+            </ul>
+
+            <h3>Най-чести грешки</h3>
+            <ul>
+                <li><strong>Пропуснат ред от вида <code>#include &lt;iostream&gt;</code>:</strong> Съобщение
+                    <code>error: ‘cout’ was not declared…</code></li>
+                <li><strong>Пропусната фигурна скоба <code>}</code>:</strong> Съобщение <code>expected ‘}’</code></li>
+                <li><strong>Неправилно написани или нещо липсващо в програмата (изтървана кръгла скоба и др.):</strong>
+                    Една или повече синтактични грешки, отбелязани в червено</li>
+                <li><strong>Изтърван символ <code>;</code> (с него завършва всеки оператор в езика C++):</strong>
+                    Съобщение <code>expected ‘;’ before…</code></li>
+            </ul>
+
+            <h3>Задачи след урока</h3>
+            <p><strong>Задача 1. Съставете програма, която отпечатва на екрана</strong></p>
+            <ul>
+                <li>а) квадратче от звездички (*) с 5 реда и 5 колони, разделени с точно един интервал между тях</li>
+                <li>б) триъгълник от @ с по 4 знака в двете страни и 7 в третата, разделени с точно един интервал между
+                    тях</li>
+            </ul>
+        </div>
+
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти. Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🚀</div>
+            <div class="viz-text" id="vizText">Кликни "Напред", за да разгледаме програмата ред по ред!</div>
+
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="code-container">
+            <div class="code-line" id="line-1">#include &lt;iostream&gt;</div>
+            <div class="code-line" id="line-2">using namespace std;</div>
+            <div class="code-line" id="line-3"></div>
+            <div class="code-line" id="line-4">int main()</div>
+            <div class="code-line" id="line-5">{</div>
+            <div class="code-line" id="line-6"> cout &lt;&lt; "This is my first C++ program." &lt;&lt; endl;</div>
+            <div class="code-line" id="line-7"> cout &lt;&lt; "Good Luck! Bye!" &lt;&lt; endl;</div>
+            <div class="code-line" id="line-8"> return 0;</div>
+            <div class="code-line" id="line-9">}</div>
+        </div>
+
+        <div class="controls">
+            <button id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const steps = [
+            {lines: [], icon: "🚀", text: "Добре дошъл в първата ти програма! Нека видим как работи тя стъпка по стъпка. Кликни напред.", showCon: false, conText: ""},
+            {lines: [1], icon: "📦", text: "Стъпка 1: #include <iostream> е като да отворим вълшебна кутия. Тя ни дава специални сили, за да пишем думи на екрана!", showCon: false, conText: ""},
+            {lines: [2], icon: "🪄", text: "Стъпка 2: using namespace std; казва на компютъра, че ще използваме стандартните думички. Така пишем по-кратко и лесно.", showCon: false, conText: ""},
+            {lines: [4], icon: "🚪", text: "Стъпка 3: int main() е главният вход! Представи си го като вратата на къщичка – от тук започва цялото приключение.", showCon: false, conText: ""},
+            {lines: [5], icon: "🔓", text: "Стъпка 4: Отворената къдрава скоба { означава \"Влизаме вътре и започваме да даваме команди!\".", showCon: false, conText: ""},
+            {lines: [6], icon: "💬", text: "Стъпка 5: Първа магия! cout казва на компютъра да отпечата текст, а endl означава \"мини на нов ред\".", showCon: true, conText: "This is my first C++ program."},
+            {lines: [7], icon: "✨", text: "Стъпка 6: Компютърът изпълнява следващата команда и отпечатва второто ни съобщение на екрана.", showCon: true, conText: "This is my first C++ program.\nGood Luck! Bye!"},
+            {lines: [8], icon: "🏆", text: "Стъпка 7: return 0; е начинът да кажем на компютъра: \"Всичко мина перфектно, приключихме успешно!\".", showCon: true, conText: "This is my first C++ program.\nGood Luck! Bye!"},
+            {lines: [9], icon: "🛑", text: "Стъпка 8: Затворената скоба } означава \"Излизаме от къщичката, програмата свърши!\". Ето го и финалния резултат.", showCon: true, conText: "This is my first C++ program.\nGood Luck! Bye!\n\nProcess returned 0 (0x0)   execution time : 0.078 s\nPress any key to continue."}
+        ];
+
+        let currentStep = 0;
+
+        function updateUI() {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+
+            if (currentStep >= 0) {
+                const step = steps[currentStep];
+
+                let firstLine = null;
+                step.lines.forEach(lineNum => {
+                    let el = document.getElementById('line-' + lineNum);
+                    if (el) {
+                        el.classList.add('active-line');
+                        if (!firstLine) firstLine = el;
+                    }
+                });
+
+                if (firstLine) {
+                    firstLine.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+
+                document.getElementById('vizText').innerText = step.text;
+
+                // Смяна на иконката с лек ефект
+                stepIcon.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    stepIcon.innerText = step.icon;
+                    stepIcon.style.transform = 'scale(1)';
+                }, 150);
+
+                if (step.showCon) {
+                    conBox.style.display = 'block';
+                    conOut.innerText = step.conText;
+                } else {
+                    conBox.style.display = 'none';
+                }
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= steps.length - 1;
+        }
+
+        function nextStep() {if (currentStep < steps.length - 1) {currentStep++; updateUI();} }
+        function prevStep() {if (currentStep > 0) {currentStep--; updateUI();} }
+
+        updateUI();
+
+        // Логика за преоразмеряване на панелите
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto';
+            }
+        });
+    </script>
+</body>
+
+</html>

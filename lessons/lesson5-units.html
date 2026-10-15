@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 4: Задачи с мерни единици - Бъдеще за таланти</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: #7f8c8d; font-size: 1.1rem; text-transform: uppercase; margin-top: 0; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #00f58c; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Блокове за код в текста */
+        .inline-code-block { background-color: #f8f9fa; border-left: 4px solid #00f58c; padding: 10px 15px; font-family: Consolas, monospace; font-size: 0.9rem; margin-bottom: 15px; white-space: pre-wrap; color: #2c3e50;}
+        
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #e6fff2; border-left: 4px solid #00f58c; padding: 15px; margin-top: 15px; border-radius: 4px; color: #2c3e50; font-size: 0.95rem; }
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #00b869; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { flex: 0 0 auto; border: 2px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background-color: #ecf0f1; position: relative; min-height: 230px; padding: 15px; gap: 15px;}
+        
+        .step-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box { display: none; background-color: #0c0c0c; border: 2px solid #555; border-top: 20px solid #ccc; border-radius: 5px 5px 0 0; padding: 10px; width: 90%; max-width: 450px; min-height: 70px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; position: relative; box-shadow: 0 8px 15px rgba(0,0,0,0.3); margin-top: auto;}
+        .console-box::before { content: "C:\\Windows\\System32\\cmd.exe"; position: absolute; top: -18px; left: 10px; color: #333; font-size: 11px; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1.05rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 50px; max-width: 90%;}
+        
+        /* Зона за код */
+        .code-container { background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 8px; font-family: Consolas, monospace; font-size: 14px; overflow-x: auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); flex-grow: 1; min-height: 200px; max-height: 300px; overflow-y: auto;}
+        .code-line { padding: 4px 8px; margin: 1px 0; border-radius: 4px; transition: background-color 0.3s; white-space: pre;}
+        .active-line { background-color: #3e4451; border-left: 4px solid #00f58c; color: #ffffff; font-weight: bold; }
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #00b869; color: white; font-size: 15px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #008f51; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TMY76ERDRX');
+</script>
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../lessons-e.html" class="back-to-home">← Назад към уроците</a>
+            
+            <h1>Задачи с мерни единици</h1>
+            <h2>Хитри математически трикове в програмирането</h2>
+            
+            <p>В състезателното програмиране за 5. клас много често се падат задачи, в които работим с време (часове и минути), дължини (метри и сантиметри), тегло (килограми и грамове) или пари (левове и стотинки).<span class="cite-hidden">[cite: 10]</span> Истинските шампиони решават тези задачи по изключително хитър и елегантен начин – изцяло математически.<span class="cite-hidden">[cite: 10]</span> За целта използваме само цели числа (<code>int</code>) и двете най-важни операции: <strong>цялочислено деление (/)</strong> и <strong>остатък от деление (%)</strong>.<span class="cite-hidden">[cite: 10]</span></p>
+
+            <h3>1. Правило: Разглобяване и сглобяване</h3>
+            <p>За да решим всяка задача с мерни единици бързо и безгрешно, винаги следваме този алгоритъм от 3 стъпки:<span class="cite-hidden">[cite: 10]</span></p>
+            <ul>
+                <li><strong>Разглобяване:</strong> Превръщаме абсолютно всичко в най-малката мерна единица, дадена в задачата (например всички часове стават минути).<span class="cite-hidden">[cite: 10]</span></li>
+                <li><strong>Пресмятане:</strong> Извършваме нужните математически действия (събираме или изваждаме) всичко в тази най-малка мярка.<span class="cite-hidden">[cite: 10]</span></li>
+                <li><strong>Сглобяване:</strong> Връщаме резултата обратно в големи и малки мерни единици, използвайки магическите оператори <code>/</code> и <code>%</code>.<span class="cite-hidden">[cite: 10]</span></li>
+            </ul>
+
+            <h3>2. Инструментите: / и %</h3>
+            <p>Представете си, че имаме общо 135 минути. Как да разберем колко часа и колко минути са това?<span class="cite-hidden">[cite: 10]</span></p>
+            <ul>
+                <li><strong>Операторът / (Колко пъти се събира цяло?):</strong> Тъй като в един час има 60 минути, делим на 60.<span class="cite-hidden">[cite: 10]</span> <code>135 / 60 = 2</code> (Значи имаме точно 2 пълни часа).<span class="cite-hidden">[cite: 10]</span></li>
+                <li><strong>Операторът % (Какво остава извън тях?):</strong> Това е остатъкът.<span class="cite-hidden">[cite: 10]</span> След като сме взели тези 2 пълни часа (120 минути), колко минути остават неизползвани?<span class="cite-hidden">[cite: 10]</span> <code>135 % 60 = 15</code> (Значи остават 15 минути).<span class="cite-hidden">[cite: 10]</span></li>
+            </ul>
+            <div class="hint-box">
+                <strong>Извод:</strong> 135 минути са точно 2 часа и 15 минути!<span class="cite-hidden">[cite: 10]</span>
+            </div>
+
+            <h3>3. Примерна задача: „Кино прожекция“</h3>
+            <p><strong>Условие:</strong> Филм започва в Н часа и М минути.<span class="cite-hidden">[cite: 10]</span> Филмът продължава К минути.<span class="cite-hidden">[cite: 10]</span> В колко часа и колко минути ще свърши филмът?<span class="cite-hidden">[cite: 10]</span> (Отговорът трябва да е във формат от 0 до 23 часа и от 0 до 59 минути).<span class="cite-hidden">[cite: 10]</span></p>
+            <p><strong>Вход:</strong> Три цели числа: Н, М и К.<span class="cite-hidden">[cite: 10]</span> (Например: <code>10 45 100</code> -> започва в 10:45 и продължава 100 минути).<span class="cite-hidden">[cite: 10]</span></p>
+            
+            <ul>
+                <li><strong>Стъпка 1: Разглобяване</strong> – Намираме колко общо минути са минали от началото на деня (от 00:00 часа).<span class="cite-hidden">[cite: 11]</span> Умножаваме часовете Н по 60, добавяме началните минути М и добавяме продължителността К.<span class="cite-hidden">[cite: 11]</span> (За нашия пример: <code>10*60 + 45 + 100 = 745</code> минути).<span class="cite-hidden">[cite: 11]</span></li>
+                <li><strong>Стъпка 2: Сглобяване</strong> – Превръщаме тези огромни минути в нови часове и минути.<span class="cite-hidden">[cite: 11]</span> (За нашия пример: <code>745 % 60 = 25</code> минути; <code>745 / 60 = 12</code> часа).<span class="cite-hidden">[cite: 11]</span></li>
+                <li><strong>Стъпка 3: Капанът на полунощ</strong> – Ако филмът започва късно вечерта и пресметнатият час е над 24, използваме остатък от деление на 24 (напр. <code>26 % 24 = 2</code>), за да "превъртим" циферблата правилно.<span class="cite-hidden">[cite: 11]</span></li>
+            </ul>
+
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Инструментите / и %</button>
+            <button class="tab-btn" onclick="switchTab(1)">Задача "Кино" - Стъпка 1</button>
+            <button class="tab-btn" onclick="switchTab(2)">Задача "Кино" - Стъпки 2 и 3</button>
+            <button class="tab-btn" onclick="switchTab(3)">Пълен код на задачата</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🎓</div>
+            <div class="viz-text" id="vizText">Избери таб отгоре и натисни "Напред"!</div>
+            
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="code-container" id="codeContainer">
+            <!-- Кодът се зарежда динамично -->
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Инструментите / и %
+                code: [
+                    "// Как работят / и % с мерни единици",
+                    "int total_minutes = 135;",
+                    "int hours = total_minutes / 60;",
+                    "int remaining_minutes = total_minutes % 60;"
+                ],
+                steps: [
+                    { lines: [], icon: "⏱️", text: "Нека видим как магията на математиката превръща 135 минути в часове и минути.", showCon: false, conText: "" },
+                    { lines: [1], icon: "📦", text: "Имаме променлива с общо 135 минути.", showCon: false, conText: "" },
+                    { lines: [2], icon: "➗", text: "Операторът / намира колко ПЪЛНИ часа има. 135 / 60 = 2 часа.", showCon: false, conText: "" },
+                    { lines: [3], icon: "🍕", text: "Операторът % намира ОСТАТЪКА. Колко минути остават неизползвани? 135 % 60 = 15 минути.", showCon: false, conText: "" },
+                    { lines: [2, 3], icon: "🎉", text: "Извод: 135 минути са точно 2 часа и 15 минути!", showCon: false, conText: "" }
+                ]
+            },
+            {
+                // Таб 1: Задача "Кино" - Разглобяване
+                code: [
+                    "// Започва в 10:45 и продължава 100 мин.",
+                    "int h = 10, m = 45, k = 100;",
+                    "// Стъпка 1: Разглобяване",
+                    "int minutes = h * 60 + m + k;"
+                ],
+                steps: [
+                    { lines: [], icon: "🎬", text: "Време е да решим задачата за киното! Първата стъпка е РАЗГЛОБЯВАНЕ.", showCon: false, conText: "" },
+                    { lines: [1], icon: "🍿", text: "Знаем часа (10), минутите (45) и продължителността (100).", showCon: false, conText: "" },
+                    { lines: [3], icon: "🔨", text: "Превръщаме всичко в най-малката мярка (минути) от полунощ насам: 10 * 60 + 45 + 100.", showCon: false, conText: "" },
+                    { lines: [3], icon: "✨", text: "Резултатът е 745! Филмът приключва точно 745 минути след полунощ.", showCon: false, conText: "" }
+                ]
+            },
+            {
+                // Таб 2: Задача "Кино" - Сглобяване
+                code: [
+                    "int total = 745;",
+                    "// Стъпка 2 & 3: Сглобяване и Капанът на полунощ",
+                    "int endh = (total / 60) % 24;",
+                    "int endm = total % 60;"
+                ],
+                steps: [
+                    { lines: [], icon: "🧩", text: "Втората стъпка е СГЛОБЯВАНЕ. Трябва да превърнем тези 745 минути обратно в час и минути.", showCon: false, conText: "" },
+                    { lines: [0], icon: "📦", text: "Започваме от нашите 745 огромни минути.", showCon: false, conText: "" },
+                    { lines: [2], icon: "🌙", text: "Часове: 745 / 60 = 12. Слагаме % 24 (Капанът на полунощ!), за да се уверим, че часът не е над 23. 12 % 24 си е 12.", showCon: false, conText: "" },
+                    { lines: [3], icon: "🍕", text: "Минути: 745 % 60 = 25. Останаха 25 минути.", showCon: false, conText: "" },
+                    { lines: [2, 3], icon: "🏁", text: "Отговорът е 12 часа и 25 минути (12:25).", showCon: false, conText: "" }
+                ]
+            },
+            {
+                // Таб 3: Пълен код
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int h, m, k;",
+                    "    cin >> h >> m >> k;",
+                    "    int minutes = h * 60 + m + k;",
+                    "    int endh = (minutes / 60) % 24;",
+                    "    int endm = minutes % 60;",
+                    "    cout << endh << \":\" << endm << endl;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "💻", text: "Ето го и целият код на програмата! Да я стартираме.", showCon: false, conText: "" },
+                    { lines: [4], icon: "🏷️", text: "Декларираме променливите за вход.", showCon: false, conText: "" },
+                    { lines: [5], icon: "⌨️", text: "Въвеждаме началния час, минути и продължителност.", showCon: true, conText: "10 45 100" },
+                    { lines: [6], icon: "🔨", text: "Разглобяваме всичко до минути (ще получим 745).", showCon: true, conText: "10 45 100" },
+                    { lines: [7, 8], icon: "🧩", text: "Сглобяваме обратно новите часове и минути, пазейки се от полунощ.", showCon: true, conText: "10 45 100" },
+                    { lines: [9], icon: "🖨️", text: "Отпечатваме красивия резултат на екрана!", showCon: true, conText: "10 45 100\n12:25" }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function loadTabCode() {
+            const container = document.getElementById('codeContainer');
+            container.innerHTML = '';
+            
+            tabData[currentTab].code.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.id = 'line-' + index;
+                div.innerHTML = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                container.appendChild(div);
+            });
+        }
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            loadTabCode();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.code-line').forEach(el => {
+                el.classList.remove('active-line');
+            });
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            let firstLine = null;
+            step.lines.forEach(lineNum => {
+                let el = document.getElementById('line-' + lineNum);
+                if(el) {
+                    el.classList.add('active-line');
+                    if(!firstLine) firstLine = el;
+                }
+            });
+            
+            if(firstLine) {
+                firstLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            document.getElementById('vizText').innerText = step.text;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        loadTabCode();
+        updateUI();
+    </script>
+</body>
+</html>

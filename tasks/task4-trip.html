@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача 4: Екскурзия - Бъдеще за таланти</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: #7f8c8d; font-size: 1.1rem; text-transform: uppercase; margin-top: 0; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Таблици в текста */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; color: #2c3e50; }
+        td { font-family: Consolas, monospace; font-size: 1rem; font-weight: bold; }
+
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #e8f4fd; border-left: 4px solid #3498db; padding: 15px; margin-top: 15px; border-radius: 4px; color: #2c3e50; font-size: 0.95rem; font-weight: bold;}
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #3498db; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { flex: 0 0 auto; border: 2px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background-color: #ecf0f1; position: relative; min-height: 230px; padding: 15px; gap: 15px;}
+        
+        .step-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box { display: none; background-color: #0c0c0c; border: 2px solid #555; border-top: 20px solid #ccc; border-radius: 5px 5px 0 0; padding: 10px; width: 90%; max-width: 450px; min-height: 70px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; position: relative; box-shadow: 0 8px 15px rgba(0,0,0,0.3); margin-top: auto;}
+        .console-box::before { content: "C:\\Windows\\System32\\cmd.exe"; position: absolute; top: -18px; left: 10px; color: #333; font-size: 11px; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1.05rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 50px; max-width: 90%;}
+        
+        /* Зона за код */
+        .code-container { background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 8px; font-family: Consolas, monospace; font-size: 14px; overflow-x: auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); flex-grow: 1; min-height: 200px; max-height: 300px; overflow-y: auto;}
+        .code-line { padding: 4px 8px; margin: 1px 0; border-radius: 4px; transition: background-color 0.3s; white-space: pre;}
+        .active-line { background-color: #3e4451; border-left: 4px solid #98c379; color: #ffffff; font-weight: bold; }
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #3498db; color: white; font-size: 15px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #2980b9; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TMY76ERDRX');
+</script>
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../tasks-e.html" class="back-to-home">← Назад към задачите</a>
+            
+            <h1>Задача 4: Екскурзия</h1>
+            
+            <p>Учениците от 5. клас отиват на екскурзия. Техният автобус потегля сутринта (или вечерта) точно в <strong>H</strong> часа и <strong>M</strong> минути.</p>
+            <p>Пътят до първата забележителност отнема <strong>T1</strong> минути. Там класът спира за почивка и разходка, която трае точно <strong>P</strong> минути. След това учениците се качват отново в автобуса и пътуват още <strong>T2</strong> минути до хотела.</p>
+            <p>Напишете програма, която пресмята в колко часа и колко минути класът ще пристигне в хотела.</p>
+            
+            <div class="hint-box">
+                Забележка: Пътуването може да премине в следващото денонощие, така че не забравяйте да се предпазите от "Капана на полунощ" с магическия остатък % 24!
+            </div>
+
+            <h3>Вход и изход</h3>
+            <p><strong>Вход:</strong> От клавиатурата се въвеждат 5 цели числа, разделени с по един интервал: H, M, T1, P, T2.</p>
+            <p><strong>Изход:</strong> Програмата трябва да отпечата две числа, разделени с интервал – часът и минутите на пристигане.</p>
+
+            <h3>Примери</h3>
+            <table>
+                <tr>
+                    <th>Примерен вход 1</th>
+                    <th>Примерен изход 1</th>
+                </tr>
+                <tr>
+                    <td>8 30 120 30 90</td>
+                    <td>12 30</td>
+                </tr>
+            </table>
+            <p><em>Обяснение: Тръгват в 8:30. Времето, което минава е общо: 120 + 30 + 90 = 240 минути. Тъй като 240 / 60 = 4, това са точно 4 пълни часа. Добавяме ги към началния час: 8:30 + 4 часа = пристигат в 12:30.</em></p>
+
+            <table>
+                <tr>
+                    <th>Примерен вход 2</th>
+                    <th>Примерен изход 2</th>
+                </tr>
+                <tr>
+                    <td>22 15 80 20 60</td>
+                    <td>0 55</td>
+                </tr>
+            </table>
+            <p><em>Обяснение: Класът тръгва на нощно пътуване в 22:15. Допълнителното време е 80 + 20 + 60 = 160 минути. Разглобяваме до минути: 22 * 60 + 15 + 160 = 1495 общо минути. Сглобяваме: 1495 % 60 = 55 (крайни минути). 1495 / 60 = 24 часа. С капана на полунощ: 24 % 24 = 0. Така получаваме 0 часа и 55 минути.</em></p>
+            
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Примерен вход 1</button>
+            <button class="tab-btn" onclick="switchTab(1)">Примерен вход 2</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🚌</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="code-container" id="codeContainer">
+            <!-- Кодът се зарежда динамично -->
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Примерен вход 1
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int h, m, t1, p, t2;",
+                    "    cin >> h >> m >> t1 >> p >> t2;",
+                    "    int total = h * 60 + m + t1 + p + t2;",
+                    "    int final_h = (total / 60) % 24;",
+                    "    int final_m = total % 60;",
+                    "    cout << final_h << \" \" << final_m << endl;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "🏁", text: "Готови ли сте за екскурзия? Нека проследим първия пример!", showCon: false, conText: "" },
+                    { lines: [4], icon: "📦", text: "Стъпка 1: Декларираме 5 променливи за входните данни на един ред.", showCon: false, conText: "" },
+                    { lines: [5], icon: "📥", text: "Стъпка 2: Въвеждаме стойностите от клавиатурата: 8 30 120 30 90.", showCon: true, conText: "8 30 120 30 90" },
+                    { lines: [6], icon: "🔨", text: "Стъпка 3: Разглобяваме! Всичко в минути: 8*60 + 30 + 120 + 30 + 90 = 750.", showCon: true, conText: "8 30 120 30 90" },
+                    { lines: [7, 8], icon: "🧩", text: "Стъпка 4: Сглобяваме! Часове: (750 / 60) % 24 = 12. Минути: 750 % 60 = 30.", showCon: true, conText: "8 30 120 30 90" },
+                    { lines: [9], icon: "🎉", text: "Стъпка 5: Извеждаме резултата 12 30. Автобусът пристига в 12:30!", showCon: true, conText: "8 30 120 30 90\n12 30" }
+                ]
+            },
+            {
+                // Таб 1: Примерен вход 2
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int h, m, t1, p, t2;",
+                    "    cin >> h >> m >> t1 >> p >> t2;",
+                    "    int total = h * 60 + m + t1 + p + t2;",
+                    "    int final_h = (total / 60) % 24;",
+                    "    int final_m = total % 60;",
+                    "    cout << final_h << \" \" << final_m << endl;",
+                    "}"
+                ],
+                steps: [
+                    { lines: [], icon: "🌙", text: "Да видим какво се случва при нощното пътуване в Пример 2.", showCon: false, conText: "" },
+                    { lines: [4], icon: "📦", text: "Стъпка 1: Отново подготвяме променливите.", showCon: false, conText: "" },
+                    { lines: [5], icon: "📥", text: "Стъпка 2: Въвеждаме късните часове за Пример 2: 22 15 80 20 60.", showCon: true, conText: "22 15 80 20 60" },
+                    { lines: [6], icon: "🔨", text: "Стъпка 3: Разглобяваме: 22*60 + 15 + 80 + 20 + 60 = 1495 минути общо.", showCon: true, conText: "22 15 80 20 60" },
+                    { lines: [7, 8], icon: "🚨", text: "Стъпка 4: Капанът на полунощ! (1495/60) е 24, но 24 % 24 = 0 часа. Минути: 1495 % 60 = 55.", showCon: true, conText: "22 15 80 20 60" },
+                    { lines: [9], icon: "🎉", text: "Стъпка 5: Извеждаме 0 55. Учениците пристигат малко преди 1 през нощта!", showCon: true, conText: "22 15 80 20 60\n0 55" }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function loadTabCode() {
+            const container = document.getElementById('codeContainer');
+            container.innerHTML = '';
+            
+            tabData[currentTab].code.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.id = 'line-' + index;
+                div.innerHTML = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                container.appendChild(div);
+            });
+        }
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            loadTabCode();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.code-line').forEach(el => {
+                el.classList.remove('active-line');
+            });
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            let firstLine = null;
+            step.lines.forEach(lineNum => {
+                let el = document.getElementById('line-' + lineNum);
+                if(el) {
+                    el.classList.add('active-line');
+                    if(!firstLine) firstLine = el;
+                }
+            });
+            
+            if(firstLine) {
+                firstLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            document.getElementById('vizText').innerText = step.text;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        loadTabCode();
+        updateUI();
+    </script>
+</body>
+</html>

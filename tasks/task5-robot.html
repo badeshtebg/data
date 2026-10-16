@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача 5: Робот - Бъдеще за таланти</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: #7f8c8d; font-size: 1.1rem; text-transform: uppercase; margin-top: 0; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #f72585; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Таблици в текста */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; color: #2c3e50; }
+        td { font-family: Consolas, monospace; font-size: 1rem; font-weight: bold; }
+
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #fce8ef; border-left: 4px solid #f72585; padding: 15px; margin-top: 15px; border-radius: 4px; color: #2c3e50; font-size: 0.95rem; font-weight: bold;}
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #f72585; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { flex: 0 0 auto; border: 2px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background-color: #ecf0f1; position: relative; min-height: 200px; padding: 15px; gap: 15px;}
+        
+        .step-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box { display: none; background-color: #0c0c0c; border: 2px solid #555; border-top: 20px solid #ccc; border-radius: 5px 5px 0 0; padding: 10px; width: 90%; max-width: 450px; min-height: 70px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; position: relative; box-shadow: 0 8px 15px rgba(0,0,0,0.3); margin-top: auto;}
+        .console-box::before { content: "C:\\Windows\\System32\\cmd.exe"; position: absolute; top: -18px; left: 10px; color: #333; font-size: 11px; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1.05rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 50px; max-width: 90%;}
+        
+        /* Зона за Формули */
+        .formula-container { 
+            background-color: #1e1e2f; 
+            border-radius: 8px; 
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6); 
+            flex-grow: 1; 
+            min-height: 200px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .math-display {
+            font-size: 1.8rem;
+            color: #ffffff;
+            font-family: Consolas, 'Fira Code', monospace;
+            text-align: center;
+            line-height: 1.8;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .math-highlight { color: #00f0ff; font-weight: bold; }
+        .math-operator { color: #ffcc00; margin: 0 8px; }
+        .math-result { color: #00f58c; font-weight: bold; font-size: 2.2rem; display: block; margin-top: 10px;}
+        .math-title { color: #f72585; font-size: 1.4rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #f72585; color: white; font-size: 15px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #d81b60; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TMY76ERDRX');
+</script>
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../tasks-e.html" class="back-to-home">← Назад към задачите</a>
+            
+            <h1>Задача 5: Робот</h1>
+            
+            <p>Ученици от клуба по роботика сглобяват робот за изложение. Основното тяло на робота е високо <strong>M</strong> метра и <strong>C</strong> сантиметра. Към него те монтират специални крака с височина <strong>K</strong> сантиметра, врат с дължина <strong>V</strong> сантиметра и комуникационна антена на върха на главата, висока <strong>A</strong> сантиметра.</p>
+            <p>Напишете програма, която пресмята колко метра и колко сантиметра е общата височина на напълно завършения робот.</p>
+            
+            <div class="hint-box">
+                💡 Подсказка: В 1 метър има точно 100 сантиметра! Първо превърнете всичко в сантиметри, съберете ги, а после върнете резултата в метри и сантиметри, използвайки магическите оператори / и %.
+            </div>
+
+            <h3>Вход и изход</h3>
+            <p><strong>Вход:</strong> От клавиатурата се въвеждат 5 цели числа, разделени с по един интервал: M, C, K, V, A.</p>
+            <p><strong>Изход:</strong> Програмата трябва да отпечата две числа, разделени с интервал – общо метри и общо сантиметри.</p>
+
+            <h3>Примери</h3>
+            <table>
+                <tr>
+                    <th>Примерен вход 1</th>
+                    <th>Примерен изход 1</th>
+                </tr>
+                <tr>
+                    <td>1 45 80 15 20</td>
+                    <td>2 60</td>
+                </tr>
+            </table>
+            <p><em>Обяснение: Основното тяло е 1 метър и 45 см (което прави 145 см). Добавяме останалите части: 145 + 80 + 15 + 20 = 260 сантиметра. Сглобяваме обратно: 260 / 100 = 2 пълни метра. Остатъкът е 260 % 100 = 60 сантиметра.</em></p>
+
+            <table>
+                <tr>
+                    <th>Примерен вход 2</th>
+                    <th>Примерен изход 2</th>
+                </tr>
+                <tr>
+                    <td>2 90 150 30 40</td>
+                    <td>5 10</td>
+                </tr>
+            </table>
+            <p><em>Обяснение: Основното тяло е 2 метра и 90 см (290 см). Събираме всички сантиметри: 290 + 150 + 30 + 40 = 510 сантиметра. Сглобяваме: 510 / 100 = 5 пълни метра. Остатъкът е 510 % 100 = 10 сантиметра.</em></p>
+            
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Примерен вход 1</button>
+            <button class="tab-btn" onclick="switchTab(1)">Примерен вход 2</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🤖</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="formula-container" id="formulaContainer">
+            <div class="math-display" id="mathDisplay">
+                <!-- Формулите ще се визуализират тук -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Примерен вход 1
+                steps: [
+                    { 
+                        icon: "🛠️", 
+                        text: "Да сглобим първия робот! Проследете стъпките.", 
+                        math: "<div class='math-title'>Готови за сглобяване!</div>",
+                        showCon: false, conText: "" 
+                    },
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Получаваме частите за робота.", 
+                        math: "<div class='math-title'>Части:</div>Тяло: <span class='math-highlight'>1</span> м и <span class='math-highlight'>45</span> см<br>Крака: <span class='math-highlight'>80</span> см<br>Врат: <span class='math-highlight'>15</span> см<br>Антена: <span class='math-highlight'>20</span> см",
+                        showCon: true, conText: "1 45 80 15 20" 
+                    },
+                    { 
+                        icon: "🔧", 
+                        text: "Стъпка 2: Превръщаме всичко в най-малката мярка (сантиметри).", 
+                        math: "<div class='math-title'>Разглобяване:</div><span class='math-highlight'>1</span> <span class='math-operator'>*</span> 100 <span class='math-operator'>+</span> <span class='math-highlight'>45</span> <span class='math-operator'>+</span> <span class='math-highlight'>80</span> <span class='math-operator'>+</span> <span class='math-highlight'>15</span> <span class='math-operator'>+</span> <span class='math-highlight'>20</span><br><span class='math-result'>= 260 см</span>",
+                        showCon: true, conText: "1 45 80 15 20" 
+                    },
+                    { 
+                        icon: "📏", 
+                        text: "Стъпка 3: Вадим целите метри чрез деление (/).", 
+                        math: "<div class='math-title'>Сглобяване - Метри:</div>260 <span class='math-operator'>/</span> 100<br><span class='math-result'>= 2 м</span>",
+                        showCon: true, conText: "1 45 80 15 20" 
+                    },
+                    { 
+                        icon: "🧩", 
+                        text: "Стъпка 4: Вадим остатъчните сантиметри чрез остатък (%).", 
+                        math: "<div class='math-title'>Сглобяване - Сантиметри:</div>260 <span class='math-operator'>%</span> 100<br><span class='math-result'>= 60 см</span>",
+                        showCon: true, conText: "1 45 80 15 20" 
+                    },
+                    { 
+                        icon: "🤖", 
+                        text: "Стъпка 5: Извеждаме крайния резултат!", 
+                        math: "<div class='math-title'>Финален Робот:</div><span class='math-result'>2 м и 60 см</span>",
+                        showCon: true, conText: "1 45 80 15 20\n2 60" 
+                    }
+                ]
+            },
+            {
+                // Таб 1: Примерен вход 2
+                steps: [
+                    { 
+                        icon: "🏗️", 
+                        text: "Във втория пример роботът е още по-голям! Нека видим логиката.", 
+                        math: "<div class='math-title'>Готови за сглобяване!</div>",
+                        showCon: false, conText: "" 
+                    },
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Получаваме частите за огромния робот.", 
+                        math: "<div class='math-title'>Части:</div>Тяло: <span class='math-highlight'>2</span> м и <span class='math-highlight'>90</span> см<br>Крака: <span class='math-highlight'>150</span> см<br>Врат: <span class='math-highlight'>30</span> см<br>Антена: <span class='math-highlight'>40</span> см",
+                        showCon: true, conText: "2 90 150 30 40" 
+                    },
+                    { 
+                        icon: "🔧", 
+                        text: "Стъпка 2: Пресмятаме общо сантиметрите.", 
+                        math: "<div class='math-title'>Разглобяване:</div><span class='math-highlight'>2</span> <span class='math-operator'>*</span> 100 <span class='math-operator'>+</span> <span class='math-highlight'>90</span> <span class='math-operator'>+</span> <span class='math-highlight'>150</span> <span class='math-operator'>+</span> <span class='math-highlight'>30</span> <span class='math-operator'>+</span> <span class='math-highlight'>40</span><br><span class='math-result'>= 510 см</span>",
+                        showCon: true, conText: "2 90 150 30 40" 
+                    },
+                    { 
+                        icon: "📏", 
+                        text: "Стъпка 3: Вадим целите метри чрез деление (/).", 
+                        math: "<div class='math-title'>Сглобяване - Метри:</div>510 <span class='math-operator'>/</span> 100<br><span class='math-result'>= 5 м</span>",
+                        showCon: true, conText: "2 90 150 30 40" 
+                    },
+                    { 
+                        icon: "🧩", 
+                        text: "Стъпка 4: Вадим остатъчните сантиметри чрез остатък (%).", 
+                        math: "<div class='math-title'>Сглобяване - Сантиметри:</div>510 <span class='math-operator'>%</span> 100<br><span class='math-result'>= 10 см</span>",
+                        showCon: true, conText: "2 90 150 30 40" 
+                    },
+                    { 
+                        icon: "🚀", 
+                        text: "Стъпка 5: Извеждаме крайния резултат!", 
+                        math: "<div class='math-title'>Финален Робот:</div><span class='math-result'>5 м и 10 см</span>",
+                        showCon: true, conText: "2 90 150 30 40\n5 10" 
+                    }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            updateUI();
+        }
+
+        function updateUI() {
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            const mathDisplay = document.getElementById('mathDisplay');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            document.getElementById('vizText').innerText = step.text;
+            mathDisplay.innerHTML = step.math;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        // Initialize first state
+        updateUI();
+    </script>
+</body>
+</html>

@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="bg">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Задачи по C++ - Бъдеще за таланти</title>
-    
+
     <!-- Google Fonts: Nunito and Fira Code -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Nunito:wght@400;600;800;900&display=swap"
+        rel="stylesheet">
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -18,11 +21,16 @@
             --bg-color: #0f111a;
             --surface-color: #1a1d2d;
             --glass-bg: rgba(26, 29, 45, 0.6);
-            --primary: #00f0ff;    /* Cyan / Neon Blue */
-            --secondary: #f72585;  /* Neon Pink */
-            --accent: #ffcc00;     /* Yellow */
-            --green: #00f58c;      /* Neon Green */
-            --purple: #b100ff;     /* Neon Purple */
+            --primary: #00f0ff;
+            /* Cyan / Neon Blue */
+            --secondary: #f72585;
+            /* Neon Pink */
+            --accent: #ffcc00;
+            /* Yellow */
+            --green: #00f58c;
+            /* Neon Green */
+            --purple: #b100ff;
+            /* Neon Purple */
             --text-light: #ffffff;
             --text-muted: #94a3b8;
             --font-main: 'Nunito', sans-serif;
@@ -127,14 +135,47 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(var(--rot)); }
-            50% { transform: translateY(-30px) rotate(calc(var(--rot) + 10deg)); }
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(var(--rot));
+            }
+
+            50% {
+                transform: translateY(-30px) rotate(calc(var(--rot) + 10deg));
+            }
         }
 
-        .bg-1 { top: 15%; left: 5%; font-size: 100px; --rot: -15deg; }
-        .bg-2 { top: 25%; right: 10%; font-size: 70px; --rot: 25deg; animation-delay: -2s;}
-        .bg-3 { top: 60%; left: 8%; font-size: 90px; --rot: 10deg; animation-delay: -5s;}
-        .bg-4 { bottom: 10%; right: 5%; font-size: 120px; --rot: -20deg; animation-delay: -7s;}
+        .bg-1 {
+            top: 15%;
+            left: 5%;
+            font-size: 100px;
+            --rot: -15deg;
+        }
+
+        .bg-2 {
+            top: 25%;
+            right: 10%;
+            font-size: 70px;
+            --rot: 25deg;
+            animation-delay: -2s;
+        }
+
+        .bg-3 {
+            top: 60%;
+            left: 8%;
+            font-size: 90px;
+            --rot: 10deg;
+            animation-delay: -5s;
+        }
+
+        .bg-4 {
+            bottom: 10%;
+            right: 5%;
+            font-size: 120px;
+            --rot: -20deg;
+            animation-delay: -7s;
+        }
 
         .page-content {
             flex: 1;
@@ -153,8 +194,15 @@
         }
 
         @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .page-header h1 {
@@ -188,19 +236,19 @@
             -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-top: 4px solid var(--card-color, var(--primary));
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .task-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(var(--card-color-rgb), 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(var(--card-color-rgb), 0.2);
             background: rgba(30, 34, 50, 0.8);
         }
 
@@ -223,14 +271,14 @@
             width: 70px;
             height: 70px;
             border-radius: 18px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 30px;
             margin-bottom: 20px;
             color: var(--card-color, var(--primary));
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.02);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
             transition: transform 0.3s ease;
         }
 
@@ -258,14 +306,14 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
             padding: 12px 20px;
             border-radius: 12px;
             font-weight: 700;
             text-decoration: none;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             width: 100%;
         }
 
@@ -285,7 +333,7 @@
             position: relative;
             z-index: 10;
         }
-        
+
         .copyright {
             color: var(--text-muted);
             font-size: 14px;
@@ -296,6 +344,7 @@
             .nav-links {
                 display: none;
             }
+
             .page-header h1 {
                 font-size: 32px;
             }
@@ -305,12 +354,13 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-  gtag('config', 'G-TMY76ERDRX');
+    gtag('config', 'G-TMY76ERDRX');
 </script>
+
 <body>
 
     <header>
@@ -334,11 +384,12 @@
     <main class="page-content">
         <div class="page-header">
             <h1>Задачи за упражнение</h1>
-            <p>Време е да приложиш наученото! Тези задачи ще ти помогнат да затвърдиш знанията си и да се почувстваш уверен в писането на код.</p>
+            <p>Време е да приложиш наученото! Тези задачи ще ти помогнат да затвърдиш знанията си и да се почувстваш
+                уверен в писането на код.</p>
         </div>
 
         <div class="tasks-grid">
-            
+
             <!-- Task 1 -->
             <div class="task-card" style="--card-color: var(--primary); --card-color-rgb: 0, 240, 255;">
                 <div class="task-number">01</div>
@@ -346,8 +397,10 @@
                     <i class="fa-solid fa-ruler-combined"></i>
                 </div>
                 <h3>Квадрат</h3>
-                <p>Потребителят въвежда едно цяло число – дължината на страната на квадрат. Напишете програма, която пресмята и отпечатва неговия периметър.</p>
-                <a href="tasks/task1-square.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
+                <p>Потребителят въвежда едно цяло число – дължината на страната на квадрат. Напишете програма, която
+                    пресмята и отпечатва неговия периметър.</p>
+                <a href="tasks/task1-square.html" class="btn-task">Реши задачата <i
+                        class="fa-solid fa-keyboard"></i></a>
             </div>
 
             <!-- Task 2 -->
@@ -357,7 +410,8 @@
                     <i class="fa-solid fa-pen-ruler"></i>
                 </div>
                 <h3>Правоъгълник</h3>
-                <p>Потребителят въвежда две цели числа – дължините на страните на правоъгълник. Напишете програма, която пресмята и отпечатва неговия периметър.</p>
+                <p>Потребителят въвежда две цели числа – дължините на страните на правоъгълник. Напишете програма, която
+                    пресмята и отпечатва неговия периметър.</p>
                 <a href="tasks/task2-rect2.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
             </div>
 
@@ -368,7 +422,8 @@
                     <i class="fa-solid fa-cube"></i>
                 </div>
                 <h3>Куб</h3>
-                <p>Потребителят въвежда едно цяло число – дължината на ръба на куб. Напишете програма, която пресмята и отпечатва неговия обем.</p>
+                <p>Потребителят въвежда едно цяло число – дължината на ръба на куб. Напишете програма, която пресмята и
+                    отпечатва неговия обем.</p>
                 <a href="tasks/task3-cube.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
             </div>
 
@@ -379,7 +434,8 @@
                     <i class="fa-solid fa-bus"></i>
                 </div>
                 <h3>Екскурзия</h3>
-                <p>Пресметни кога учениците ще пристигнат в хотела! Използвай магията на делението (/) и остатъка (%), за да пребориш "Капана на полунощ".</p>
+                <p>Пресметни кога учениците ще пристигнат в хотела! Използвай магията на делението (/) и остатъка (%),
+                    за да пребориш "Капана на полунощ".</p>
                 <a href="tasks/task4-trip.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
             </div>
 
@@ -390,8 +446,60 @@
                     <i class="fa-solid fa-robot"></i>
                 </div>
                 <h3>Робот</h3>
-                <p>Сглоби гигантски робот част по част! Превърни всичко в сантиметри и пресметни финалната му височина в метри и сантиметри.</p>
+                <p>Сглоби гигантски робот част по част! Превърни всичко в сантиметри и пресметни финалната му височина в
+                    метри и сантиметри.</p>
                 <a href="tasks/task5-robot.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
+            </div>
+
+            <!-- Task 6 -->
+            <div class="task-card" style="--card-color: #ff6b00; --card-color-rgb: 255, 107, 0;">
+                <div class="task-number">06</div>
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-rocket"></i>
+                </div>
+                <h3>Мисия</h3>
+                <p>Подготви космическия кораб за полет до Марс! Пресметни общото тегло на провизиите и марсохода в
+                    тонове и килограми.</p>
+                <a href="tasks/task6-mission.html" class="btn-task">Реши задачата <i
+                        class="fa-solid fa-keyboard"></i></a>
+            </div>
+
+            <!-- Task 7 -->
+            <div class="task-card" style="--card-color: #ff003c; --card-color-rgb: 255, 0, 60;">
+                <div class="task-number">07</div>
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-user-secret"></i>
+                </div>
+                <h3>Кибер агент</h3>
+                <p>Влез в ролята на таен агент! Пресметни колко място заемат свалените секретни файлове на флашката в
+                    килобайти и байтове (1 KB = 1024 байта).</p>
+                <a href="tasks/task7-cyber.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
+            </div>
+
+            <!-- Task 8 -->
+            <div class="task-card" style="--card-color: #3b82f6; --card-color-rgb: 59, 130, 246;">
+                <div class="task-number">08</div>
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-plus-minus"></i>
+                </div>
+                <h3>Сума и произведение</h3>
+                <p>Отдели цифрите на двуцифрено число с помощта на деление и остатък, за да пресметнеш тяхната сума и
+                    произведение!</p>
+                <a href="tasks/task8-sumprod.html" class="btn-task">Реши задачата <i
+                        class="fa-solid fa-keyboard"></i></a>
+            </div>
+
+            <!-- Task 9 -->
+            <div class="task-card" style="--card-color: #10ac84; --card-color-rgb: 16, 172, 132;">
+                <div class="task-number">09</div>
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </div>
+                <h3>Обратно</h3>
+                <p>Обърни цифрите на двуцифрено число наобратно и умножи резултата! Упражни логиката за отделяне на
+                    единици и десетици.</p>
+                <a href="tasks/task9-obratno.html" class="btn-task">Реши задачата <i
+                        class="fa-solid fa-keyboard"></i></a>
             </div>
 
         </div>
@@ -404,4 +512,5 @@
     </footer>
 
 </body>
+
 </html>

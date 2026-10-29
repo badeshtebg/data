@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 6: Отделяне на цифри - Бъдеще за таланти</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: #7f8c8d; font-size: 1.1rem; text-transform: uppercase; margin-top: 0; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #ffcc00; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        h4 { color: #2c3e50; margin-top: 15px; margin-bottom: 5px; font-size: 1.05rem; }
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Блокове за код в текста */
+        .inline-code-block { background-color: #fcfcfc; border-left: 4px solid #ffcc00; padding: 10px 15px; font-family: Consolas, monospace; font-size: 0.9rem; margin-bottom: 15px; white-space: pre-wrap; color: #2c3e50;}
+        .inline-code { font-family: Consolas, monospace; background-color: #eee; padding: 2px 5px; border-radius: 4px; color: #d35400;}
+
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #fffbf0; border-left: 4px solid #ffcc00; padding: 15px; margin-top: 15px; border-radius: 4px; color: #2c3e50; font-size: 0.95rem; }
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #f39c12; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { flex: 0 0 auto; border: 2px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background-color: #ecf0f1; position: relative; min-height: 200px; padding: 15px; gap: 15px;}
+        
+        .step-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box { display: none; background-color: #0c0c0c; border: 2px solid #555; border-top: 20px solid #ccc; border-radius: 5px 5px 0 0; padding: 10px; width: 90%; max-width: 450px; min-height: 70px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; position: relative; box-shadow: 0 8px 15px rgba(0,0,0,0.3); margin-top: auto;}
+        .console-box::before { content: "C:\\Windows\\System32\\cmd.exe"; position: absolute; top: -18px; left: 10px; color: #333; font-size: 11px; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1.05rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 50px; max-width: 90%;}
+        
+        /* Зона за Формули */
+        .formula-container { 
+            background-color: #2c3e50; 
+            border-radius: 8px; 
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6); 
+            flex-grow: 1; 
+            min-height: 150px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        .math-display {
+            font-size: 1.8rem;
+            color: #ffffff;
+            font-family: Consolas, 'Fira Code', monospace;
+            text-align: center;
+            line-height: 1.8;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .math-highlight { color: #f1c40f; font-weight: bold; }
+        .math-operator { color: #e74c3c; margin: 0 8px; }
+        .math-result { color: #2ecc71; font-weight: bold; font-size: 2.2rem; display: block; margin-top: 10px;}
+        .math-title { color: #f39c12; font-size: 1.4rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        /* Зона за код */
+        .code-container { background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 8px; font-family: Consolas, monospace; font-size: 14px; overflow-x: auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); flex-grow: 1; min-height: 150px; max-height: 250px; overflow-y: auto;}
+        .code-line { padding: 4px 8px; margin: 1px 0; border-radius: 4px; transition: background-color 0.3s; white-space: pre;}
+        .active-line { background-color: #3e4451; border-left: 4px solid #f39c12; color: #ffffff; font-weight: bold; }
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #f39c12; color: white; font-size: 15px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #e67e22; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../lessons-e.html" class="back-to-home">← Назад към уроците</a>
+            
+            <h1>Отделяне на цифрите на число</h1>
+            <h2>Линейни задачи</h2>
+            
+            <h3>Приложение и предназначение</h3>
+            <p>В много случаи се налага, ако имаме дадено число да отделим цифрите му.</p>
+            <p>Например, ако искаме да проверим дали дадено число се дели на 3 или на 9, ние намираме сумата от цифрите му. Понякога се налага да разменим цифрите на едно число или да го прочетем наобратно.</p>
+            
+            <h3>Отделяне на цифрите на число – общи формули</h3>
+            <div class="inline-code-block">
+единици:       n % 10
+десетици:      (n / 10) % 10
+стотици:       (n / 100) % 10
+хиляди:        (n / 1000) % 10
+десетохилядни: (n / 10000) % 10
+стохилядни:    (n / 100000) % 10
+. . .</div>
+
+            <h3>Задача: Сума от цифри на число</h3>
+            <p>Дадено е трицифрено число <strong>k</strong>.</p>
+            <p>Да се състави програма <strong>sumdig</strong>, която прочита от клавиатурата числото <strong>k</strong> и отпечатва сумата от цифрите му.</p>
+            
+            <div class="hint-box">
+                <strong>Примерен вход:</strong> 365<br>
+                <strong>Примерен изход:</strong> 14
+            </div>
+
+            <h3>Решение стъпка по стъпка</h3>
+            
+            <h4>Променливи</h4>
+            <p>За да намерим сумата от цифрите на числото, трябва да намерим поотделно всяка една от тях – цифрата на единиците, на десетиците и на стотиците. Освен цялото число <code>k</code> се налага да зададем по едно цяло число за всяка една от цифрите:</p>
+            <ul>
+                <li><span class="inline-code">int k, e, d, s;</span></li>
+                <li><strong>e</strong> – цифрата на единиците</li>
+                <li><strong>d</strong> – цифрата на десетиците</li>
+                <li><strong>s</strong> – цифрата на стотиците</li>
+            </ul>
+
+            <h4>Вход</h4>
+            <p>Първо трябва да се въведе числото <strong>k</strong>:</p>
+            <div class="inline-code-block">cin >> k;</div>
+
+            <h4>Пресмятане</h4>
+            <p>Трябва да се изчислят съответните цифри като се използват целочислените операции за деление по следния начин:</p>
+            <div class="inline-code-block">e = k % 10;
+d = (k / 10) % 10;
+s = k / 100;</div>
+            <p><em>Забележка: За трицифрено число стотиците могат да се намерят само с <code>k / 100</code>, тъй като няма по-големи цифри.</em></p>
+
+            <h4>Изход</h4>
+            <p>Накрая, чрез оператора за изход извеждаме сумата на цифрите на числото:</p>
+            <div class="inline-code-block">cout << e + d + s << endl;</div>
+
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Как работят формулите</button>
+            <button class="tab-btn" onclick="switchTab(1)">Пълно решение (sumdig)</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🔢</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <div class="formula-container" id="formulaContainer" style="display: none;">
+                <div class="math-display" id="mathDisplay">
+                    <!-- Формулите ще се визуализират тук -->
+                </div>
+            </div>
+
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="code-container" id="codeContainer">
+            <!-- Кодът се зарежда динамично -->
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Как работят формулите
+                code: [
+                    "// Нека имаме числото 365",
+                    "int n = 365;",
+                    "// Единици",
+                    "int e = n % 10;",
+                    "// Десетици",
+                    "int d = (n / 10) % 10;",
+                    "// Стотици",
+                    "int s = (n / 100) % 10;"
+                ],
+                steps: [
+                    { 
+                        icon: "🔍", 
+                        text: "Нека разгледаме как формулите буквално 'откъсват' цифрите една по една.", 
+                        showMath: false, math: "",
+                        showCon: false, conText: "",
+                        lines: []
+                    },
+                    { 
+                        icon: "📦", 
+                        text: "Започваме с числото 365 в променливата n.", 
+                        showMath: true, math: "<div class='math-title'>Нашето число</div><span class='math-result' style='color:#fff;'>365</span>",
+                        showCon: false, conText: "",
+                        lines: [1]
+                    },
+                    { 
+                        icon: "🧩", 
+                        text: "Единици: Операторът % 10 винаги 'отрязва' и ни дава ПОСЛЕДНАТА цифра.", 
+                        showMath: true, math: "<div class='math-title'>Отделяне на единици (e)</div>365 <span class='math-operator'>%</span> 10<br><span class='math-result'>= 5</span>",
+                        showCon: false, conText: "",
+                        lines: [3]
+                    },
+                    { 
+                        icon: "✂️", 
+                        text: "Десетици: Първо делим на 10, за да махнем последната цифра (става 36). После взимаме новата последна с % 10.", 
+                        showMath: true, math: "<div class='math-title'>Отделяне на десетици (d)</div>(365 <span class='math-operator'>/</span> 10) = 36<br>36 <span class='math-operator'>%</span> 10<br><span class='math-result'>= 6</span>",
+                        showCon: false, conText: "",
+                        lines: [5]
+                    },
+                    { 
+                        icon: "🔪", 
+                        text: "Стотици: Делим на 100, за да махнем последните ДВЕ цифри (става 3). После пак взимаме остатъка.", 
+                        showMath: true, math: "<div class='math-title'>Отделяне на стотици (s)</div>(365 <span class='math-operator'>/</span> 100) = 3<br>3 <span class='math-operator'>%</span> 10<br><span class='math-result'>= 3</span>",
+                        showCon: false, conText: "",
+                        lines: [7]
+                    },
+                    { 
+                        icon: "🎉", 
+                        text: "Успех! Успяхме да разделим 365 на съставните му цифри: 3, 6 и 5.", 
+                        showMath: true, math: "<div class='math-title'>Всички цифри</div><span class='math-result'>s = 3 | d = 6 | e = 5</span>",
+                        showCon: false, conText: "",
+                        lines: []
+                    }
+                ]
+            },
+            {
+                // Таб 1: Пълно решение (sumdig)
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int k, e, d, s;",
+                    "    cin >> k;",
+                    "    e = k % 10;",
+                    "    d = (k / 10) % 10;",
+                    "    s = k / 100;",
+                    "    cout << e + d + s << endl;",
+                    "}"
+                ],
+                steps: [
+                    { 
+                        icon: "💻", 
+                        text: "Ето как изглежда пълният код на нашата програма sumdig.", 
+                        showMath: false, math: "",
+                        showCon: false, conText: "",
+                        lines: []
+                    },
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Декларираме променлива за числото (k) и по една променлива за всяка негова цифра.", 
+                        showMath: false, math: "",
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    { 
+                        icon: "⌨️", 
+                        text: "Стъпка 2: Въвеждаме трицифреното число от клавиатурата (например 365).", 
+                        showMath: false, math: "",
+                        showCon: true, conText: "365",
+                        lines: [5]
+                    },
+                    { 
+                        icon: "⚙️", 
+                        text: "Стъпка 3: Компютърът прилага формулите и запазва съответните цифри в e, d и s.", 
+                        showMath: true, math: "<div class='math-title'>Пресмятане в паметта</div>e = <span class='math-highlight'>5</span><br>d = <span class='math-highlight'>6</span><br>s = <span class='math-highlight'>3</span>",
+                        showCon: true, conText: "365",
+                        lines: [6, 7, 8]
+                    },
+                    { 
+                        icon: "🖨️", 
+                        text: "Стъпка 4: Събираме отделените цифри (5 + 6 + 3 = 14) и отпечатваме резултата на екрана!", 
+                        showMath: false, math: "",
+                        showCon: true, conText: "365\n14",
+                        lines: [9]
+                    }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function loadTabCode() {
+            const container = document.getElementById('codeContainer');
+            container.innerHTML = '';
+            
+            tabData[currentTab].code.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.id = 'line-' + index;
+                div.innerHTML = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                container.appendChild(div);
+            });
+        }
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            loadTabCode();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.code-line').forEach(el => {
+                el.classList.remove('active-line');
+            });
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            const formulaContainer = document.getElementById('formulaContainer');
+            const mathDisplay = document.getElementById('mathDisplay');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            let firstLine = null;
+            step.lines.forEach(lineNum => {
+                let el = document.getElementById('line-' + lineNum);
+                if(el) {
+                    el.classList.add('active-line');
+                    if(!firstLine) firstLine = el;
+                }
+            });
+            
+            if(firstLine) {
+                firstLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            document.getElementById('vizText').innerText = step.text;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.showMath) {
+                formulaContainer.style.display = 'flex';
+                mathDisplay.innerHTML = step.math;
+            } else {
+                formulaContainer.style.display = 'none';
+            }
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        loadTabCode();
+        updateUI();
+    </script>
+</body>
+</html>

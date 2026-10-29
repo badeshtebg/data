@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача: Мисия - Бъдеще за таланти</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #95a5a6;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .meta-info {
+            color: #95a5a6;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-top: 5px; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #00f0ff; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Таблици в текста */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; color: #2c3e50; }
+        td { font-family: Consolas, monospace; font-size: 1rem; font-weight: bold; }
+
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #e6fdff; border-left: 4px solid #00f0ff; padding: 15px; margin-top: 15px; border-radius: 4px; color: #2c3e50; font-size: 0.95rem; font-weight: bold;}
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #00b8c4; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { flex: 0 0 auto; border: 2px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background-color: #ecf0f1; position: relative; min-height: 200px; padding: 15px; gap: 15px;}
+        
+        .step-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .console-box { display: none; background-color: #0c0c0c; border: 2px solid #555; border-top: 20px solid #ccc; border-radius: 5px 5px 0 0; padding: 10px; width: 90%; max-width: 450px; min-height: 70px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; position: relative; box-shadow: 0 8px 15px rgba(0,0,0,0.3); margin-top: auto;}
+        .console-box::before { content: "C:\\Windows\\System32\\cmd.exe"; position: absolute; top: -18px; left: 10px; color: #333; font-size: 11px; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1.05rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 50px; max-width: 90%;}
+        
+        /* Зона за Формули */
+        .formula-container { 
+            background-color: #1a1a2e; 
+            border-radius: 8px; 
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6); 
+            flex-grow: 1; 
+            min-height: 200px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .math-display {
+            font-size: 1.8rem;
+            color: #ffffff;
+            font-family: Consolas, 'Fira Code', monospace;
+            text-align: center;
+            line-height: 1.8;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .math-highlight { color: #00f0ff; font-weight: bold; }
+        .math-operator { color: #ffcc00; margin: 0 8px; }
+        .math-result { color: #00f58c; font-weight: bold; font-size: 2.2rem; display: block; margin-top: 10px;}
+        .math-title { color: #00f0ff; font-size: 1.4rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #00b8c4; color: white; font-size: 15px; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #008f99; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../tasks-e.html" class="back-to-home">← Назад към задачите</a>
+            
+            <div class="meta-info">РШИ Варна | Време: 1 с. | Памет: 256 MB</div>
+            <h1>ЗАДАЧА 1: Мисия</h1>
+            
+            <p>Капитанът на космически кораб подготвя товара за важна мисия до Марс. В огромния трюм на кораба вече има първоначален товар от <strong>Т</strong> тона и <strong>К</strong> килограма. Днес екипажът трябва да натовари още <strong>N</strong> на брой еднакви контейнера с провизии, като всеки от тях тежи по точно <strong>С</strong> килограма. Накрая в трюма паркират и един изследователски марсоход, който тежи <strong>R</strong> килограма.</p>
+            <p>Напишете програма <code>mission</code>, която пресмята колко тона и колко килограма е абсолютното тегло на целия товар на кораба.</p>
+            
+            <div class="hint-box">
+                Подсказка: В 1 тон има точно 1000 килограма.
+            </div>
+
+            <h3>Вход</h3>
+            <p>От първия ред на стандартния вход се въвеждат 5 цели числа, разделени с по един интервал:</p>
+            <ul>
+                <li><strong>Т</strong> и <strong>К</strong> - тоновете и килограмите на първоначалния товар.</li>
+                <li><strong>N</strong> - броят на новите контейнери.</li>
+                <li><strong>С</strong> - теглото на един контейнер в килограми.</li>
+                <li><strong>R</strong> - теглото на марсохода в килограми.</li>
+            </ul>
+
+            <h3>Изход</h3>
+            <p>Програмата трябва да отпечата две цели числа, разделени с интервал – общо тонове и общо килограми.</p>
+
+            <h3>Пример</h3>
+            <table>
+                <tr>
+                    <th>Примерен вход</th>
+                    <th>Изход за примера</th>
+                </tr>
+                <tr>
+                    <td>2 450 3 200 800</td>
+                    <td>3 850</td>
+                </tr>
+            </table>
+            
+            <h3>Обяснение на примера</h3>
+            <p>Първоначалният товар е 2 тона и 450 кг (което прави 2450 кг). Имаме 3 контейнера по 200 кг (общо 600 кг) и марсоход от 800 кг. Събираме всичко:<br>
+            <code>2450 + 600 + 800 = 3850</code> килограма.</p>
+            <p>Сглобяваме обратно: <code>3850 / 1000 = 3</code> пълни тона. Остатъкът е <code>3850 % 1000 = 850</code> килограма.</p>
+            
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Примерен вход</button>
+            <button class="tab-btn" onclick="switchTab(1)">Тайна мисия (Пример 2)</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🚀</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="formula-container" id="formulaContainer">
+            <div class="math-display" id="mathDisplay">
+                <!-- Формулите ще се визуализират тук -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Примерен вход
+                steps: [
+                    { 
+                        icon: "🧑‍🚀", 
+                        text: "Готови за излитане към Марс! Да пресметнем товара.", 
+                        math: "<div class='math-title'>Подготовка за мисията</div>",
+                        showCon: false, conText: "" 
+                    },
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Получаваме данните за товара на кораба.", 
+                        math: "<div class='math-title'>Товар:</div>Начален: <span class='math-highlight'>2</span> т и <span class='math-highlight'>450</span> кг<br>Контейнери: <span class='math-highlight'>3</span> бр. по <span class='math-highlight'>200</span> кг<br>Марсоход: <span class='math-highlight'>800</span> кг",
+                        showCon: true, conText: "2 450 3 200 800" 
+                    },
+                    { 
+                        icon: "⚖️", 
+                        text: "Стъпка 2: Превръщаме всичко в килограми. Внимаваме с умножението за контейнерите!", 
+                        math: "<div class='math-title'>Разглобяване в килограми:</div><span class='math-highlight'>2</span> <span class='math-operator'>*</span> 1000 <span class='math-operator'>+</span> <span class='math-highlight'>450</span> <span class='math-operator'>+</span> (<span class='math-highlight'>3</span> <span class='math-operator'>*</span> <span class='math-highlight'>200</span>) <span class='math-operator'>+</span> <span class='math-highlight'>800</span><br><span class='math-result'>= 3850 кг</span>",
+                        showCon: true, conText: "2 450 3 200 800" 
+                    },
+                    { 
+                        icon: "🚀", 
+                        text: "Стъпка 3: Вадим целите тонове чрез деление (/).", 
+                        math: "<div class='math-title'>Сглобяване - Тонове:</div>3850 <span class='math-operator'>/</span> 1000<br><span class='math-result'>= 3 тона</span>",
+                        showCon: true, conText: "2 450 3 200 800" 
+                    },
+                    { 
+                        icon: "🎒", 
+                        text: "Стъпка 4: Вадим остатъчните килограми чрез остатък (%).", 
+                        math: "<div class='math-title'>Сглобяване - Килограми:</div>3850 <span class='math-operator'>%</span> 1000<br><span class='math-result'>= 850 кг</span>",
+                        showCon: true, conText: "2 450 3 200 800" 
+                    },
+                    { 
+                        icon: "🪐", 
+                        text: "Стъпка 5: Извеждаме крайния резултат!", 
+                        math: "<div class='math-title'>Общо тегло:</div><span class='math-result'>3 тона и 850 кг</span>",
+                        showCon: true, conText: "2 450 3 200 800\n3 850" 
+                    }
+                ]
+            },
+            {
+                // Таб 1: Тайна мисия (Пример 2)
+                steps: [
+                    { 
+                        icon: "🛰️", 
+                        text: "Втора мисия с много по-тежък товар. Да видим логиката!", 
+                        math: "<div class='math-title'>Втора мисия</div>",
+                        showCon: false, conText: "" 
+                    },
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Получаваме данните за втория космически кораб.", 
+                        math: "<div class='math-title'>Товар:</div>Начален: <span class='math-highlight'>5</span> т и <span class='math-highlight'>800</span> кг<br>Контейнери: <span class='math-highlight'>4</span> бр. по <span class='math-highlight'>500</span> кг<br>Марсоход: <span class='math-highlight'>1200</span> кг",
+                        showCon: true, conText: "5 800 4 500 1200" 
+                    },
+                    { 
+                        icon: "⚖️", 
+                        text: "Стъпка 2: Пресмятаме всичко в най-малката мярка.", 
+                        math: "<div class='math-title'>Разглобяване в килограми:</div><span class='math-highlight'>5</span> <span class='math-operator'>*</span> 1000 <span class='math-operator'>+</span> <span class='math-highlight'>800</span> <span class='math-operator'>+</span> (<span class='math-highlight'>4</span> <span class='math-operator'>*</span> <span class='math-highlight'>500</span>) <span class='math-operator'>+</span> <span class='math-highlight'>1200</span><br><span class='math-result'>= 9000 кг</span>",
+                        showCon: true, conText: "5 800 4 500 1200" 
+                    },
+                    { 
+                        icon: "🚀", 
+                        text: "Стъпка 3: Вадим целите тонове чрез деление (/).", 
+                        math: "<div class='math-title'>Сглобяване - Тонове:</div>9000 <span class='math-operator'>/</span> 1000<br><span class='math-result'>= 9 тона</span>",
+                        showCon: true, conText: "5 800 4 500 1200" 
+                    },
+                    { 
+                        icon: "🎒", 
+                        text: "Стъпка 4: Вадим остатъчните килограми чрез остатък (%).", 
+                        math: "<div class='math-title'>Сглобяване - Килограми:</div>9000 <span class='math-operator'>%</span> 1000<br><span class='math-result'>= 0 кг</span>",
+                        showCon: true, conText: "5 800 4 500 1200" 
+                    },
+                    { 
+                        icon: "🪐", 
+                        text: "Стъпка 5: Извеждаме крайния резултат!", 
+                        math: "<div class='math-title'>Общо тегло:</div><span class='math-result'>9 тона и 0 кг</span>",
+                        showCon: true, conText: "5 800 4 500 1200\n9 0" 
+                    }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            updateUI();
+        }
+
+        function updateUI() {
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            const mathDisplay = document.getElementById('mathDisplay');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            document.getElementById('vizText').innerText = step.text;
+            mathDisplay.innerHTML = step.math;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        // Initialize first state
+        updateUI();
+    </script>
+</body>
+</html>

@@ -190,7 +190,7 @@
 
         .page-header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
             animation: fadeInDown 0.8s ease-out;
         }
 
@@ -225,10 +225,122 @@
             font-weight: 600;
         }
 
+        /* Accordion Styles */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .accordion-item {
+            background: rgba(26, 29, 45, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .accordion-item.active {
+            border-color: rgba(0, 240, 255, 0.3);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 240, 255, 0.08);
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 24px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border: none;
+            color: var(--text-light);
+            font-family: var(--font-main);
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .accordion-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
+        }
+
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .accordion-title i {
+            color: var(--primary);
+            font-size: 26px;
+            width: 35px;
+            text-align: center;
+        }
+
+        .accordion-badge {
+            font-size: 13px;
+            font-family: var(--font-code);
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .accordion-icon {
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.4s ease;
+            padding: 0 30px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+            padding: 10px 30px 35px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-section-msg {
+            color: var(--text-muted);
+            font-size: 16px;
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+        }
+
+        .empty-section-msg i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        /* Grid & Cards */
         .lessons-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
+            margin-top: 20px;
         }
 
         .lesson-card {
@@ -334,6 +446,19 @@
             .page-header h1 {
                 font-size: 32px;
             }
+
+            .accordion-header {
+                font-size: 19px;
+                padding: 18px 20px;
+            }
+
+            .accordion-badge {
+                display: none;
+            }
+
+            .accordion-item.active .accordion-content {
+                padding: 10px 20px 25px 20px;
+            }
         }
 
         footer {
@@ -385,96 +510,147 @@
             <p>Готов ли си да станеш програмист? Избери урок и започни своето приключение в света на кода!</p>
         </div>
 
-        <div class="lessons-grid">
+        <div class="accordion">
 
-            <!-- Lesson 1 -->
-            <div class="lesson-card" style="--card-color: var(--primary); --card-color-rgb: 0, 240, 255;">
-                <div class="lesson-number">01</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-hand-spock"></i>
+            <!-- Раздел 1: Начални познания (затворен по подразбиране) -->
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span class="accordion-title">
+                        <i class="fa-solid fa-rocket"></i>
+                        Начални познания
+                        <span class="accordion-badge">6 урока</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="lessons-grid">
+
+                        <!-- Lesson 1 -->
+                        <div class="lesson-card" style="--card-color: var(--primary); --card-color-rgb: 0, 240, 255;">
+                            <div class="lesson-number">01</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-hand-spock"></i>
+                            </div>
+                            <h3>Запознаване със среда за програмиране CodeBlocks</h3>
+                            <p>Научи как да "заговориш" на компютъра! Ще напишем първата ти истинска програма, която извежда
+                                съобщение на екрана.</p>
+                            <a href="lessons/lesson1-codeblocks.html" class="btn-lesson">Започни урока <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+
+                        <!-- Lesson 2 -->
+                        <div class="lesson-card" style="--card-color: var(--accent); --card-color-rgb: 255, 204, 0;">
+                            <div class="lesson-number">02</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-calculator"></i>
+                            </div>
+                            <h3>Работа с цели числа</h3>
+                            <p>Компютърът е истински математически гений! Ще се научим как да съхраняваме цели числа и да караме
+                                програмата да смята вместо нас.</p>
+                            <a href="lessons/lesson2-numbers.html" class="btn-lesson">Започни урока <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+
+                        <!-- Lesson 3 -->
+                        <div class="lesson-card" style="--card-color: var(--purple); --card-color-rgb: 177, 0, 255;">
+                            <div class="lesson-number">03</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-box-archive"></i>
+                            </div>
+                            <h3>Целочислени променливи</h3>
+                            <p>Какво е променлива? Представи си вълшебни кутийки с имена, в които можем да пазим числа, да ги
+                                променяме и да ги използваме по всяко време!</p>
+                            <a href="lessons/lesson3-variables.html" class="btn-lesson">Започни урока <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+
+                        <!-- Lesson 4 -->
+                        <div class="lesson-card" style="--card-color: var(--green); --card-color-rgb: 0, 245, 140;">
+                            <div class="lesson-number">04</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <h3>Етапи при решаване на задачи по програмиране</h3>
+                            <p>Всяка велика програма започва с добър план! Ще научим кои са най-важните стъпки – от прочитането на
+                                условието до написването и тестването на готовия код.</p>
+                            <a href="lessons/lesson4-steps.html" class="btn-lesson">Започни урока <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+
+                        <!-- Lesson 5 -->
+                        <div class="lesson-card" style="--card-color: var(--secondary); --card-color-rgb: 247, 37, 133;">
+                            <div class="lesson-number">05</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <h3>Задачи с мерни единици</h3>
+                            <p>Научи тайните на шампионите! Разбери как да пресмяташ време, дължина и тегло с магическите оператори
+                                за деление и остатък.</p>
+                            <a href="lessons/lesson5-units.html" class="btn-lesson">Започни урока <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+
+                        <!-- Lesson 6 -->
+                        <div class="lesson-card" style="--card-color: #ff8c00; --card-color-rgb: 255, 140, 0;">
+                            <div class="lesson-number">06</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-scissors"></i>
+                            </div>
+                            <h3>Отделяне на цифрите на число</h3>
+                            <p>Научи как да разглобиш всяко число на съставните му цифри! Разбери логиката на целочисленото деление
+                                (/) и остатъка (%).</p>
+                            <a href="lessons/lesson6-digits.html" class="btn-lesson">Започни урока <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+
+                    </div>
                 </div>
-                <h3>Запознаване със среда за програмиране CodeBlocks</h3>
-                <p>Научи как да "заговориш" на компютъра! Ще напишем първата ти истинска програма, която извежда
-                    съобщение на екрана.</p>
-                <a href="lessons/lesson1-codeblocks.html" class="btn-lesson">Започни урока <i
-                        class="fa-solid fa-arrow-right"></i></a>
             </div>
 
-            <!-- Lesson 2 -->
-            <div class="lesson-card" style="--card-color: var(--accent); --card-color-rgb: 255, 204, 0;">
-                <div class="lesson-number">02</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-calculator"></i>
-                </div>
-                <h3>Работа с цели числа</h3>
-                <p>Компютърът е истински математически гений! Ще се научим как да съхраняваме цели числа и да караме
-                    програмата да смята вместо нас.</p>
-                <a href="lessons/lesson2-numbers.html" class="btn-lesson">Започни урока <i
-                        class="fa-solid fa-arrow-right"></i></a>
-            </div>
+           <!-- Раздел 2: Условен оператор (затворен по подразбиране) -->
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span class="accordion-title">
+                        <i class="fa-solid fa-code-branch"></i>
+                        Условен оператор
+                        <span class="accordion-badge">1 урок</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="lessons-grid">
 
-            <!-- Lesson 3 -->
-            <div class="lesson-card" style="--card-color: var(--purple); --card-color-rgb: 177, 0, 255;">
-                <div class="lesson-number">03</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-box-archive"></i>
-                </div>
-                <h3>Целочислени променливи</h3>
-                <p>Какво е променлива? Представи си вълшебни кутийки с имена, в които можем да пазим числа, да ги
-                    променяме и да ги използваме по всяко време!</p>
-                <a href="lessons/lesson3-variables.html" class="btn-lesson">Започни урока <i
-                        class="fa-solid fa-arrow-right"></i></a>
-            </div>
+                        <!-- Lesson 7 -->
+                        <div class="lesson-card" style="--card-color: #00b4d8; --card-color-rgb: 0, 180, 216;">
+                            <div class="lesson-number">07</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-code-branch"></i>
+                            </div>
+                            <h3>Условен оператор if…else</h3>
+                            <p>Научи програмата да взима решения! Ще се запознаем с операторите за сравнение, намирането на минимум и максимум и размяната на променливи.</p>
+                            <a href="lessons/lesson7-ifelse.html" class="btn-lesson">Започни урока <i class="fa-solid fa-arrow-right"></i></a>
+                        </div>
 
-            <!-- Lesson 4 -->
-            <div class="lesson-card" style="--card-color: var(--green); --card-color-rgb: 0, 245, 140;">
-                <div class="lesson-number">04</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-list-check"></i>
+                    </div>
                 </div>
-                <h3>Етапи при решаване на задачи по програмиране</h3>
-                <p>Всяка велика програма започва с добър план! Ще научим кои са най-важните стъпки – от прочитането на
-                    условието до написването и тестването на готовия код.</p>
-                <a href="lessons/lesson4-steps.html" class="btn-lesson">Започни урока <i
-                        class="fa-solid fa-arrow-right"></i></a>
-            </div>
-
-            <!-- Lesson 5 -->
-            <div class="lesson-card" style="--card-color: var(--secondary); --card-color-rgb: 247, 37, 133;">
-                <div class="lesson-number">05</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-clock"></i>
-                </div>
-                <h3>Задачи с мерни единици</h3>
-                <p>Научи тайните на шампионите! Разбери как да пресмяташ време, дължина и тегло с магическите оператори
-                    за деление и остатък.</p>
-                <a href="lessons/lesson5-units.html" class="btn-lesson">Започни урока <i
-                        class="fa-solid fa-arrow-right"></i></a>
-            </div>
-
-            <!-- Lesson 6 -->
-            <div class="lesson-card" style="--card-color: #ff8c00; --card-color-rgb: 255, 140, 0;">
-                <div class="lesson-number">06</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-scissors"></i>
-                </div>
-                <h3>Отделяне на цифрите на число</h3>
-                <p>Научи как да разглобиш всяко число на съставните му цифри! Разбери логиката на целочисленото деление
-                    (/) и остатъка (%).</p>
-                <a href="lessons/lesson6-digits.html" class="btn-lesson">Започни урока <i
-                        class="fa-solid fa-arrow-right"></i></a>
             </div>
 
         </div>
     </main>
 
-    <!-- Добавете този блок за дъно (footer) -->
     <footer>
         <div class="copyright">
             &copy; 2026 Бъдеще за таланти.<br>
             Милен Мавродиев е автор на сайта.
         </div>
     </footer>
+
+    <script>
+        function toggleAccordion(button) {
+            const item = button.parentElement;
+            item.classList.toggle('active');
+        }
+    </script>
 
 </body>
 

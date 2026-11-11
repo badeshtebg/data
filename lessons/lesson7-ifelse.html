@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 7: Условен оператор if...else - Бъдеще за таланти</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-TMY76ERDRX');
+    </script>
+
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 52%;
+            min-width: 25%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 25%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #00b4d8;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 5px; }
+        h2 { color: #7f8c8d; font-size: 1.1rem; text-transform: uppercase; margin-top: 0; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #00b4d8; padding-bottom: 5px; margin-top: 30px; font-size: 1.25rem;}
+        h4 { color: #2c3e50; margin-top: 15px; margin-bottom: 5px; font-size: 1.05rem; }
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Таблици в левия панел */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; margin-top: 10px; font-size: 0.9rem;}
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top;}
+        th { background-color: #e0f7fa; color: #006064; font-weight: bold; }
+        td pre { margin: 0; font-family: Consolas, monospace; font-size: 0.85rem; white-space: pre-wrap; color: #2c3e50;}
+        
+        .memory-mini-table { width: auto; margin: 0; border: 1px solid #bdc3c7;}
+        .memory-mini-table th { background-color: #34495e; color: #fff; text-align: center; padding: 4px 10px;}
+        .memory-mini-table td { text-align: center; font-family: Consolas, monospace; font-weight: bold; padding: 4px 10px; background-color: #ecf0f1;}
+
+        /* Блокове за код в текста */
+        .inline-code-block { background-color: #f8f9fa; border-left: 4px solid #00b4d8; padding: 12px 15px; font-family: Consolas, monospace; font-size: 0.9rem; margin-bottom: 15px; white-space: pre-wrap; color: #2c3e50; border-radius: 0 4px 4px 0;}
+        .inline-code { font-family: Consolas, monospace; background-color: #eee; padding: 2px 6px; border-radius: 4px; color: #d35400; font-weight: bold;}
+
+        /* Подсказка / Бележка */
+        .hint-box { background-color: #e0f7fa; border-left: 4px solid #00b4d8; padding: 15px; margin-top: 15px; border-radius: 4px; color: #006064; font-size: 0.95rem; }
+        .error-box { background-color: #ffebee; border-left: 4px solid #e53935; padding: 15px; margin-top: 15px; border-radius: 4px; color: #b71c1c; font-size: 0.95rem; }
+
+        /* Черна конзола в левия панел (за слайд 12) */
+        .static-console {
+            background-color: #0c0c0c;
+            color: #cccccc;
+            font-family: Consolas, 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 6px;
+            border-top: 18px solid #ccc;
+            margin-bottom: 15px;
+            white-space: pre-line;
+            line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: 1px solid #dcdfe6;
+            padding: 7px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: bold;
+            color: #555;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #00b4d8; color: white; border-color: #0096c7; box-shadow: 0 2px 5px rgba(0,180,216,0.3);}
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { 
+            flex: 0 0 auto; 
+            border: 2px dashed #bdc3c7; 
+            border-radius: 8px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start; 
+            background-color: #ecf0f1; 
+            position: relative; 
+            min-height: 210px; 
+            padding: 15px; 
+            gap: 12px;
+        }
+        
+        .step-icon {
+            font-size: 3.2rem;
+            line-height: 1;
+            margin-bottom: 2px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .viz-text { 
+            text-align: center; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            color: #2c3e50; 
+            min-height: 45px; 
+            max-width: 95%;
+            line-height: 1.4;
+        }
+
+        /* Визуални кутийки за памет (RAM) */
+        .mem-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 5px 0;
+        }
+        .mem-box {
+            background-color: #ffffff;
+            border: 2px solid #00b4d8;
+            border-radius: 8px;
+            min-width: 65px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .mem-box.highlight {
+            border-color: #f72585;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(247, 37, 133, 0.25);
+        }
+        .mem-name {
+            background-color: #00b4d8;
+            color: white;
+            font-family: Consolas, monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 3px 8px;
+        }
+        .mem-box.highlight .mem-name {
+            background-color: #f72585;
+        }
+        .mem-val {
+            font-family: Consolas, monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 8px 10px;
+        }
+
+        .console-box { 
+            display: none; 
+            background-color: #0c0c0c; 
+            border: 2px solid #555; 
+            border-top: 20px solid #ccc; 
+            border-radius: 5px 5px 0 0; 
+            padding: 10px; 
+            width: 90%; 
+            max-width: 450px; 
+            min-height: 60px; 
+            font-family: Consolas, 'Courier New', monospace; 
+            font-size: 13px; 
+            position: relative; 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3); 
+            margin-top: auto;
+        }
+        .console-box::before { 
+            content: "C:\\Windows\\System32\\cmd.exe"; 
+            position: absolute; 
+            top: -18px; 
+            left: 10px; 
+            color: #333; 
+            font-size: 11px; 
+            font-family: 'Segoe UI', sans-serif; 
+            font-weight: bold; 
+        }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        /* Зона за код */
+        .code-container { 
+            background-color: #282c34; 
+            color: #abb2bf; 
+            padding: 15px; 
+            border-radius: 8px; 
+            font-family: Consolas, monospace; 
+            font-size: 14px; 
+            overflow-x: auto; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+            flex-grow: 1; 
+            min-height: 220px; 
+            overflow-y: auto;
+        }
+        .code-line { padding: 3px 8px; margin: 1px 0; border-radius: 4px; transition: background-color 0.2s; white-space: pre;}
+        .active-line { background-color: #3e4451; border-left: 4px solid #00b4d8; color: #ffffff; font-weight: bold; }
+        .error-line { background-color: #5a1e1e; border-left: 4px solid #ff4d4d; color: #ffcccc; font-weight: bold; }
+        
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 10px;}
+        button.nav-btn { 
+            padding: 10px 22px; 
+            border: none; 
+            border-radius: 6px; 
+            background-color: #00b4d8; 
+            color: white; 
+            font-size: 15px; 
+            font-weight: bold;
+            cursor: pointer; 
+            transition: background-color 0.2s; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        button.nav-btn:hover { background-color: #0096c7; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../lessons-e.html" class="back-to-home">← Назад към уроците</a>
+            
+            <h1>Условен оператор if…else<span class="cite-hidden">[cite: 12]</span></h1>
+            <h2>Условен оператор<span class="cite-hidden">[cite: 12]</span></h2>
+            
+            <h3>Новото за вас от езика C++: Оператори за сравнение<span class="cite-hidden">[cite: 12]</span></h3>
+            <table>
+                <tr>
+                    <th>знак<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>действие<span class="cite-hidden">[cite: 12]</span></th>
+                </tr>
+                <tr>
+                    <td><span class="inline-code">&lt;</span><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>по-малко<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><span class="inline-code">&lt;=</span><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>по-малко или равно<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><span class="inline-code">&gt;</span><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>по-голямо<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><span class="inline-code">&gt;=</span><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>по-голямо или равно<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><span class="inline-code">==</span><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>равно (съвпада)<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><span class="inline-code">!=</span><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>различно<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+            </table>
+
+            <h3>Резултат от операцията сравнение<span class="cite-hidden">[cite: 12]</span></h3>
+            <p>Резултатът от сравнението <span class="inline-code">a &lt; b</span> е <strong>1</strong>, ако е вярно, както например, ако сравним 3 и 5.<span class="cite-hidden">[cite: 12]</span></p>
+            <p>Резултатът от сравнението <span class="inline-code">a &lt; b</span> е <strong>0</strong>, ако не е вярно, както например, ако сравним 5 и 5.<span class="cite-hidden">[cite: 12]</span></p>
+            <div class="hint-box">
+                С оператор <span class="inline-code">cout &lt;&lt; (a &lt; b);</span> можете да направите проверка.<span class="cite-hidden">[cite: 12]</span>
+            </div>
+
+            <h3>Разклоняване на пресмятанията<span class="cite-hidden">[cite: 12]</span></h3>
+            <p>Пример за намиране на по-голямото (максимума) от две числа:<span class="cite-hidden">[cite: 12]</span></p>
+            <div class="inline-code-block">#include &lt;iostream&gt;
+using namespace std;
+int main()
+{
+    int a, b, max;
+    cin &gt;&gt; a &gt;&gt; b;
+    if (a &gt; b) max = a;
+    else max = b;
+    cout &lt;&lt; max &lt;&lt; endl;
+}<span class="cite-hidden">[cite: 12]</span></div>
+
+            <h3>Пример за намиране на максимума и на минимума на две цели числа<span class="cite-hidden">[cite: 12]</span></h3>
+            <div class="inline-code-block">#include &lt;iostream&gt;
+using namespace std;
+int main()
+{
+    int a, b, max, min;
+    cin &gt;&gt; a &gt;&gt; b;
+    if (a &gt; b)
+    {
+        max = a;
+        min = b;
+    }
+    else
+    {
+        max = b;
+        min = a;
+    }
+    cout &lt;&lt; "max: " &lt;&lt; max &lt;&lt; ", " &lt;&lt; "min: " &lt;&lt; min &lt;&lt; endl;
+}<span class="cite-hidden">[cite: 12]</span></div>
+
+            <h3>Условен оператор if (1)<span class="cite-hidden">[cite: 12]</span></h3>
+            <table>
+                <tr>
+                    <th>Форми на оператор if<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>Пример<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>Изпълнение<span class="cite-hidden">[cite: 12]</span></th>
+                </tr>
+                <tr>
+                    <td><pre>if(условие) оператор1;
+else оператор2;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>int a;
+cin &gt;&gt; a;
+if(a &lt; 6) cout &lt;&lt; "ok";
+else cout &lt;&lt; "no";</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>При <span class="inline-code">a = 6</span> ще се изведе “no”, т.к. условието <span class="inline-code">(a &lt; 6)</span> не е изпълнено и се изпълнява оператора след <span class="inline-code">else</span>.<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><pre>if(условие) оператор;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>int a;
+cin &gt;&gt; a;
+if(a == 7) cout &lt;&lt; "excellent";</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>Съобщението "excellent" ще се изведе само, ако <span class="inline-code">a</span> е 7.<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+            </table>
+
+            <h3>Условен оператор if (2)<span class="cite-hidden">[cite: 12]</span></h3>
+            <table>
+                <tr>
+                    <th>Форми на оператор if<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>Пример<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>Изпълнение<span class="cite-hidden">[cite: 12]</span></th>
+                </tr>
+                <tr>
+                    <td><pre>if(условие)
+{
+    оператор1;
+    оператор2;
+}
+else
+{
+    оператор3;
+    оператор4;
+}</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>int a, b, m, n;
+cin &gt;&gt; a &gt;&gt; b;
+if(b != 0)
+{
+    m = a / b;
+    n = a % b;
+}
+else
+{
+    cout &lt;&lt; "Division error";
+    m = a;
+}</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <p style="margin-top:0;">Ако <span class="inline-code">b</span> не е 0 ще се извършат двете деления.<span class="cite-hidden">[cite: 12]</span></p>
+                        <p style="margin-bottom:0;">Ако <span class="inline-code">b</span> е равно на 0 ще се изпълнят командите след <span class="inline-code">else</span> – ще се изведе съобщението и в <span class="inline-code">m</span> ще се запише стойността на <span class="inline-code">a</span>.<span class="cite-hidden">[cite: 12]</span></p>
+                    </td>
+                </tr>
+            </table>
+
+            <h3>Най-често срещани грешки<span class="cite-hidden">[cite: 12]</span></h3>
+            <table>
+                <tr>
+                    <th>Типични грешки<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>Съобщения от компилатора<span class="cite-hidden">[cite: 12]</span></th>
+                </tr>
+                <tr>
+                    <td>Не е описана променливата <span class="inline-code">a</span><br>(забравен е ред <span class="inline-code">int a;</span>)<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><span class="inline-code">‘a’ was not declared in this scope</span><span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><pre>if(a = 5) cout &lt;&lt; "a е 5";</pre><br>Бъркаме равно ли е с присвояване!<br>Така записано в условието не проверяваме дали <span class="inline-code">a</span> е 5, а казваме на <span class="inline-code">a</span> да стане 5.<span class="cite-hidden">[cite: 12]</span></td>
+                    <td>Няма да изведе грешка.<span class="cite-hidden">[cite: 12]</span></td>
+                </tr>
+                <tr>
+                    <td><pre>#include &lt;iostream&gt;
+using namespace std;
+int main()
+{
+    int a;
+    cout &lt;&lt; "a = ";
+    cin &gt;&gt; a;
+    if(a &gt; 5) cout &lt;&lt; "&gt;5" &lt;&lt; endl;
+    cout &lt;&lt; "&lt;=5";
+}</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <p style="margin-top:0;">Няма да изведе грешка.<span class="cite-hidden">[cite: 12]</span></p>
+                        <p>Искали сме да изведем съобщение „&gt;5“, ако <span class="inline-code">a &gt; 5</span>, и „&lt;=5“ в противен случай, но сме изтървали <span class="inline-code">else</span>.<span class="cite-hidden">[cite: 12]</span></p>
+                        <p style="margin-bottom:0;">Резултатът е, че ще видим на екрана и двете съобщения, ако <span class="inline-code">a &gt; 5</span>.<span class="cite-hidden">[cite: 12]</span></p>
+                    </td>
+                </tr>
+            </table>
+
+            <h3>Алгоритъм за намиране на най-малкото от три числа a, b и c (1, 2, 3)<span class="cite-hidden">[cite: 12]</span></h3>
+            <table>
+                <tr>
+                    <th>Описание на алгоритъма: словесно<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>с програмен код<span class="cite-hidden">[cite: 12]</span></th>
+                    <th>стойности на променливи<span class="cite-hidden">[cite: 12]</span></th>
+                </tr>
+                <tr>
+                    <td>Декларираме променливите a, b, c, min<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>int a, b, c, min;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Въвеждаме стойност за променливата a<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>cin &gt;&gt; a;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                            <tr><td>5</td><td>?</td><td>?</td><td>?</td></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Въвеждаме стойност за променливата b<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>cin &gt;&gt; b;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                            <tr><td>5</td><td>3</td><td>?</td><td>?</td></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Въвеждаме стойност за променливата c<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>cin &gt;&gt; c;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                            <tr><td>5</td><td>3</td><td>7</td><td>?</td></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Допускаме, че най-малкото число е първото – числото a<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>min = a;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                            <tr><td>5</td><td>3</td><td>7</td><td>5</td></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Проверяваме дали второто число b не е по-малко от най-малкото и ако е така, най-малкото (min) вече е второто число.<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>if (b &lt; min) min = b;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                            <tr><td>5</td><td>3</td><td>7</td><td>3</td></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Проверяваме дали третото число c не е по-малко от първото и ако е така, най-малкото (min) вече става третото число.<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>if (c &lt; min) min = c;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                            <tr><td>5</td><td>3</td><td>7</td><td>3</td></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Отпечатваме на екрана най-малкото от числата.<span class="cite-hidden">[cite: 12]</span></td>
+                    <td><pre>cout &lt;&lt; "the smallest number is: " &lt;&lt; min &lt;&lt; endl;</pre><span class="cite-hidden">[cite: 12]</span></td>
+                    <td>
+                        <table class="memory-mini-table">
+                            <tr><th>a</th><th>b</th><th>c</th><th>min</th></tr>
+                            <tr><td>5</td><td>3</td><td>7</td><td>3</td></tr>
+                        </table><span class="cite-hidden">[cite: 12]</span>
+                    </td>
+                </tr>
+            </table>
+
+            <h3>Алгоритъм за намиране на най-малкото от три числа a, b и c (4)<span class="cite-hidden">[cite: 12]</span></h3>
+            <div class="static-console">5
+3
+7
+the smallest number is: 3<span class="cite-hidden">[cite: 12]</span></div>
+            <div class="inline-code-block">#include &lt;iostream&gt;
+using namespace std;
+int main()
+{
+    int a, b, c, min;
+    cin &gt;&gt; a &gt;&gt; b &gt;&gt; c;
+    min = a;
+    if (b &lt; min) min = b;
+    if (c &lt; min) min = c;
+    cout &lt;&lt; "the smallest number is: " &lt;&lt; min &lt;&lt; endl;
+}<span class="cite-hidden">[cite: 12]</span></div>
+
+            <h3>Размяна на стойностите на две променливи<span class="cite-hidden">[cite: 12]</span></h3>
+            <div class="error-box">
+                Понякога е трудно да се възприеме, че последователността<br>
+                <span class="inline-code">a = b; b = a;</span><br>
+                <strong>няма да осъществи размяната</strong>!<span class="cite-hidden">[cite: 12]</span>
+            </div>
+            <div class="hint-box">
+                Правилният подход е с въвеждане на допълнителна променлива:<br>
+                <span class="inline-code">int t = a, a = b, b = t;</span><span class="cite-hidden">[cite: 12]</span>
+            </div>
+
+            <h3>Размяна на стойностите на две променливи чрез функция от STL<span class="cite-hidden">[cite: 12]</span></h3>
+            <div class="inline-code-block">#include &lt;iostream&gt;
+using namespace std;
+int main()
+{
+    int a = 2, b = 3;
+    swap(a, b);
+    cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; endl;
+}<span class="cite-hidden">[cite: 12]</span></div>
+
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове за всички 8 теми -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">1. Сравнение</button>
+            <button class="tab-btn" onclick="switchTab(1)">2. Максимум</button>
+            <button class="tab-btn" onclick="switchTab(2)">3. Макс и Мин</button>
+            <button class="tab-btn" onclick="switchTab(3)">4. Форми на if</button>
+            <button class="tab-btn" onclick="switchTab(4)">5. Чести грешки</button>
+            <button class="tab-btn" onclick="switchTab(5)">6. Мин от 3 числа</button>
+            <button class="tab-btn" onclick="switchTab(6)">7. Размяна с t</button>
+            <button class="tab-btn" onclick="switchTab(7)">8. Функция swap()</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">⚖️</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <!-- Динамични кутийки за памет (променливи) -->
+            <div class="mem-container" id="memContainer" style="display: none;"></div>
+
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="code-container" id="codeContainer">
+            <!-- Кодът се зарежда динамично -->
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Резултат от операцията сравнение
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int a = 3, b = 5;",
+                    "    cout << (a < b) << endl;",
+                    "    a = 5;",
+                    "    cout << (a < b) << endl;",
+                    "}"
+                ],
+                steps: [
+                    {
+                        icon: "⚖️",
+                        text: "Компютърът оценява всяко сравнение като Истина (1) или Лъжа (0).",
+                        vars: [],
+                        showCon: false, conText: "",
+                        lines: []
+                    },
+                    {
+                        icon: "📦",
+                        text: "Стъпка 1: Задаваме начални стойности a = 3 и b = 5.",
+                        vars: [{name: "a", val: "3", hl: true}, {name: "b", val: "5", hl: true}],
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    {
+                        icon: "✅",
+                        text: "Стъпка 2: Проверяваме (a < b), т.е. (3 < 5). Това е ВЯРНО, затова на екрана се извежда 1!",
+                        vars: [{name: "a", val: "3"}, {name: "b", val: "5"}],
+                        showCon: true, conText: "1",
+                        lines: [5]
+                    },
+                    {
+                        icon: "🔄",
+                        text: "Стъпка 3: Променяме стойността на променливата a да стане 5.",
+                        vars: [{name: "a", val: "5", hl: true}, {name: "b", val: "5"}],
+                        showCon: true, conText: "1",
+                        lines: [6]
+                    },
+                    {
+                        icon: "❌",
+                        text: "Стъпка 4: Проверяваме отново (a < b), т.е. (5 < 5). Това НЕ Е вярно, затова се извежда 0!",
+                        vars: [{name: "a", val: "5"}, {name: "b", val: "5"}],
+                        showCon: true, conText: "1\n0",
+                        lines: [7]
+                    }
+                ]
+            },
+            {
+                // Таб 1: Разклоняване на пресмятанията (Максимум на две числа)
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int a, b, max;",
+                    "    cin >> a >> b;",
+                    "    if (a > b) max = a;",
+                    "    else max = b;",
+                    "    cout << max << endl;",
+                    "}"
+                ],
+                steps: [
+                    {
+                        icon: "🔀",
+                        text: "Условният оператор if...else позволява на програмата да избира по кой път да тръгне.",
+                        vars: [{name: "a", val: "?"}, {name: "b", val: "?"}, {name: "max", val: "?"}],
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    {
+                        icon: "⌨️",
+                        text: "Стъпка 1: Въвеждаме от клавиатурата две числа, например a = 4 и b = 9.",
+                        vars: [{name: "a", val: "4", hl: true}, {name: "b", val: "9", hl: true}, {name: "max", val: "?"}],
+                        showCon: true, conText: "4 9",
+                        lines: [5]
+                    },
+                    {
+                        icon: "🤔",
+                        text: "Стъпка 2: Проверяваме условието (a > b) -> (4 > 9). Условието е ЛЪЖА (0), затова прескачаме max = a!",
+                        vars: [{name: "a", val: "4"}, {name: "b", val: "9"}, {name: "max", val: "?"}],
+                        showCon: true, conText: "4 9",
+                        lines: [6]
+                    },
+                    {
+                        icon: "⤵️",
+                        text: "Стъпка 3: Изпълнява се частта след else: в променливата max се записва стойността на b (9).",
+                        vars: [{name: "a", val: "4"}, {name: "b", val: "9"}, {name: "max", val: "9", hl: true}],
+                        showCon: true, conText: "4 9",
+                        lines: [7]
+                    },
+                    {
+                        icon: "🖨️",
+                        text: "Стъпка 4: Отпечатваме намерения максимум на екрана.",
+                        vars: [{name: "a", val: "4"}, {name: "b", val: "9"}, {name: "max", val: "9"}],
+                        showCon: true, conText: "4 9\n9",
+                        lines: [8]
+                    }
+                ]
+            },
+            {
+                // Таб 2: Максимум и минимум на две цели числа
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int a, b, max, min;",
+                    "    cin >> a >> b;",
+                    "    if (a > b)",
+                    "    {",
+                    "        max = a;",
+                    "        min = b;",
+                    "    }",
+                    "    else",
+                    "    {",
+                    "        max = b;",
+                    "        min = a;",
+                    "    }",
+                    "    cout << \"max: \" << max << \", \" << \"min: \" << min << endl;",
+                    "}"
+                ],
+                steps: [
+                    {
+                        icon: "🏆",
+                        text: "Когато искаме да изпълним повече от една команда след if или else, ги заграждаме във фигурни скоби { }.",
+                        vars: [{name: "a", val: "?"}, {name: "b", val: "?"}, {name: "max", val: "?"}, {name: "min", val: "?"}],
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    {
+                        icon: "⌨️",
+                        text: "Стъпка 1: Въвеждаме числата a = 12 и b = 5.",
+                        vars: [{name: "a", val: "12", hl: true}, {name: "b", val: "5", hl: true}, {name: "max", val: "?"}, {name: "min", val: "?"}],
+                        showCon: true, conText: "12 5",
+                        lines: [5]
+                    },
+                    {
+                        icon: "✅",
+                        text: "Стъпка 2: Проверяваме (a > b) -> (12 > 5). Условието е ИСТИНА! Влизаме в първия блок със скоби { }.",
+                        vars: [{name: "a", val: "12"}, {name: "b", val: "5"}, {name: "max", val: "?"}, {name: "min", val: "?"}],
+                        showCon: true, conText: "12 5",
+                        lines: [6]
+                    },
+                    {
+                        icon: "📥",
+                        text: "Стъпка 3: Изпълняват се двете команди: max става a (12), а min става b (5). Блокът след else се пропуска изцяло!",
+                        vars: [{name: "a", val: "12"}, {name: "b", val: "5"}, {name: "max", val: "12", hl: true}, {name: "min", val: "5", hl: true}],
+                        showCon: true, conText: "12 5",
+                        lines: [7, 8, 9, 10]
+                    },
+                    {
+                        icon: "🖨️",
+                        text: "Стъпка 4: Извеждаме едновременно максимума и минимума на екрана.",
+                        vars: [{name: "a", val: "12"}, {name: "b", val: "5"}, {name: "max", val: "12"}, {name: "min", val: "5"}],
+                        showCon: true, conText: "12 5\nmax: 12, min: 5",
+                        lines: [16]
+                    }
+                ]
+            },
+            {
+                // Таб 3: Условен оператор if (1 и 2)
+                code: [
+                    "int a, b, m, n;",
+                    "cin >> a >> b;",
+                    "if(a < 6) cout << \"ok\" << endl;",
+                    "else cout << \"no\" << endl;",
+                    "",
+                    "if(b != 0)",
+                    "{",
+                    "    m = a / b;",
+                    "    n = a % b;",
+                    "}",
+                    "else",
+                    "{",
+                    "    cout << \"Division error\";",
+                    "    m = a;",
+                    "}"
+                ],
+                steps: [
+                    {
+                        icon: "📋",
+                        text: "Нека проследим формите на оператора if при входни данни a = 6 и b = 0.",
+                        vars: [{name: "a", val: "6", hl: true}, {name: "b", val: "0", hl: true}, {name: "m", val: "?"}, {name: "n", val: "?"}],
+                        showCon: true, conText: "6 0",
+                        lines: [0, 1]
+                    },
+                    {
+                        icon: "🔍",
+                        text: "Стъпка 1: Проверяваме (a < 6) -> (6 < 6). Това е ЛЪЖА, затова се изпълнява else и се извежда \"no\".",
+                        vars: [{name: "a", val: "6"}, {name: "b", val: "0"}, {name: "m", val: "?"}, {name: "n", val: "?"}],
+                        showCon: true, conText: "6 0\nno",
+                        lines: [2, 3]
+                    },
+                    {
+                        icon: "🛑",
+                        text: "Стъпка 2: Проверяваме (b != 0) -> дали b е различно от 0. Но b е 0! Затова пропускаме делението (спасяваме програмата от грешка!).",
+                        vars: [{name: "a", val: "6"}, {name: "b", val: "0", hl: true}, {name: "m", val: "?"}, {name: "n", val: "?"}],
+                        showCon: true, conText: "6 0\nno",
+                        lines: [5]
+                    },
+                    {
+                        icon: "⚠️",
+                        text: "Стъпка 3: Изпълнява се блокът след else – отпечатва се \"Division error\" и в m се записва стойността на a (6).",
+                        vars: [{name: "a", val: "6"}, {name: "b", val: "0"}, {name: "m", val: "6", hl: true}, {name: "n", val: "?"}],
+                        showCon: true, conText: "6 0\nno\nDivision error",
+                        lines: [10, 11, 12, 13, 14]
+                    }
+                ]
+            },
+            {
+                // Таб 4: Най-често срещани грешки
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int a;",
+                    "    cout << \"a = \";",
+                    "    cin >> a;",
+                    "    if(a > 5) cout << \">5\" << endl;",
+                    "    cout << \"<=5\"; // Тук сме забравили else!",
+                    "}"
+                ],
+                steps: [
+                    {
+                        icon: "🐞",
+                        text: "Внимание за капани! Нека видим какво става, когато забравим думичката else.",
+                        vars: [{name: "a", val: "?"}],
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    {
+                        icon: "⌨️",
+                        text: "Стъпка 1: Програмата пита за a и ние въвеждаме числото 8 (което е по-голямо от 5).",
+                        vars: [{name: "a", val: "8", hl: true}],
+                        showCon: true, conText: "a = 8",
+                        lines: [5, 6]
+                    },
+                    {
+                        icon: "✅",
+                        text: "Стъпка 2: Проверяваме (a > 5) -> (8 > 5) е вярно! На екрана правилно се отпечатва \">5\".",
+                        vars: [{name: "a", val: "8"}],
+                        showCon: true, conText: "a = 8\n>5",
+                        lines: [7]
+                    },
+                    {
+                        icon: "💥",
+                        text: "ГРЕШКА: Понеже пред втория cout няма else, компютърът го изпълнява ВИНАГИ! На екрана излиза и \"<=5\", което е грешно за числото 8!",
+                        vars: [{name: "a", val: "8"}],
+                        showCon: true, conText: "a = 8\n>5\n<=5",
+                        lines: [8],
+                        isError: true
+                    }
+                ]
+            },
+            {
+                // Таб 5: Алгоритъм за намиране на най-малкото от три числа (1, 2, 3, 4)
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int a, b, c, min;",
+                    "    cin >> a >> b >> c;",
+                    "    min = a;",
+                    "    if (b < min) min = b;",
+                    "    if (c < min) min = c;",
+                    "    cout << \"the smallest number is: \" << min << endl;",
+                    "}"
+                ],
+                steps: [
+                    {
+                        icon: "🥇",
+                        text: "Стъпка 1: Декларираме променливите a, b, c и min.",
+                        vars: [{name: "a", val: "?"}, {name: "b", val: "?"}, {name: "c", val: "?"}, {name: "min", val: "?"}],
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    {
+                        icon: "⌨️",
+                        text: "Стъпка 2: Въвеждаме стойности за a = 5, b = 3 и c = 7.",
+                        vars: [{name: "a", val: "5", hl: true}, {name: "b", val: "3", hl: true}, {name: "c", val: "7", hl: true}, {name: "min", val: "?"}],
+                        showCon: true, conText: "5\n3\n7",
+                        lines: [5]
+                    },
+                    {
+                        icon: "🎯",
+                        text: "Стъпка 3: Допускаме, че най-малкото число е първото – записваме a (5) в променливата min.",
+                        vars: [{name: "a", val: "5"}, {name: "b", val: "3"}, {name: "c", val: "7"}, {name: "min", val: "5", hl: true}],
+                        showCon: true, conText: "5\n3\n7",
+                        lines: [6]
+                    },
+                    {
+                        icon: "🔄",
+                        text: "Стъпка 4: Проверяваме дали второто число b е по-малко от min (3 < 5). Да! Вече най-малкото (min) става 3.",
+                        vars: [{name: "a", val: "5"}, {name: "b", val: "3"}, {name: "c", val: "7"}, {name: "min", val: "3", hl: true}],
+                        showCon: true, conText: "5\n3\n7",
+                        lines: [7]
+                    },
+                    {
+                        icon: "🛡️",
+                        text: "Стъпка 5: Проверяваме дали третото число c е по-малко от min (7 < 3). Не е! Затова min си остава 3.",
+                        vars: [{name: "a", val: "5"}, {name: "b", val: "3"}, {name: "c", val: "7"}, {name: "min", val: "3"}],
+                        showCon: true, conText: "5\n3\n7",
+                        lines: [8]
+                    },
+                    {
+                        icon: "🖨️",
+                        text: "Стъпка 6: Отпечатваме на екрана най-малкото от трите числа!",
+                        vars: [{name: "a", val: "5"}, {name: "b", val: "3"}, {name: "c", val: "7"}, {name: "min", val: "3"}],
+                        showCon: true, conText: "5\n3\n7\nthe smallest number is: 3",
+                        lines: [9]
+                    }
+                ]
+            },
+            {
+                // Таб 6: Размяна на стойностите на две променливи
+                code: [
+                    "// ГРЕШЕН ОПИТ:",
+                    "// a = b; b = a; -> губим първоначалното a!",
+                    "",
+                    "// ПРАВИЛЕН ПОДХОД (с трета чашка t):",
+                    "int a = 2, b = 3;",
+                    "int t = a;",
+                    "a = b;",
+                    "b = t;"
+                ],
+                steps: [
+                    {
+                        icon: "🥛",
+                        text: "Представи си две чаши – едната с мляко (a = 2), другата със сок (b = 3). За да ги разменим, ни трябва трета празна чаша (t)!",
+                        vars: [{name: "a", val: "2", hl: true}, {name: "b", val: "3", hl: true}, {name: "t", val: "?"}],
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    {
+                        icon: "1️⃣",
+                        text: "Стъпка 1: Изливаме съдържанието на първата променлива a в помощната променлива t (t = 2).",
+                        vars: [{name: "a", val: "2"}, {name: "b", val: "3"}, {name: "t", val: "2", hl: true}],
+                        showCon: false, conText: "",
+                        lines: [5]
+                    },
+                    {
+                        icon: "2️⃣",
+                        text: "Стъпка 2: Вече спокойно прехвърляме стойността на b в a (a става 3).",
+                        vars: [{name: "a", val: "3", hl: true}, {name: "b", val: "3"}, {name: "t", val: "2"}],
+                        showCon: false, conText: "",
+                        lines: [6]
+                    },
+                    {
+                        icon: "3️⃣",
+                        text: "Стъпка 3: Връщаме запазената стойност от помощната променлива t в b (b става 2). Размяната е успешна!",
+                        vars: [{name: "a", val: "3"}, {name: "b", val: "2", hl: true}, {name: "t", val: "2"}],
+                        showCon: false, conText: "",
+                        lines: [7]
+                    }
+                ]
+            },
+            {
+                // Таб 7: Размяна чрез функция от STL (swap)
+                code: [
+                    "#include <iostream>",
+                    "using namespace std;",
+                    "int main()",
+                    "{",
+                    "    int a = 2, b = 3;",
+                    "    swap(a, b);",
+                    "    cout << a << \" \" << b << endl;",
+                    "}"
+                ],
+                steps: [
+                    {
+                        icon: "🪄",
+                        text: "Стъпка 1: Декларираме променливите със стойности a = 2 и b = 3.",
+                        vars: [{name: "a", val: "2", hl: true}, {name: "b", val: "3", hl: true}],
+                        showCon: false, conText: "",
+                        lines: [4]
+                    },
+                    {
+                        icon: "⚡",
+                        text: "Стъпка 2: Вградената функция swap(a, b) автоматично разменя стойностите им на един ред!",
+                        vars: [{name: "a", val: "3", hl: true}, {name: "b", val: "2", hl: true}],
+                        showCon: false, conText: "",
+                        lines: [5]
+                    },
+                    {
+                        icon: "🖨️",
+                        text: "Стъпка 3: Извеждаме новите стойности на екрана: 3 2.",
+                        vars: [{name: "a", val: "3"}, {name: "b", val: "2"}],
+                        showCon: true, conText: "3 2",
+                        lines: [6]
+                    }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function loadTabCode() {
+            const container = document.getElementById('codeContainer');
+            container.innerHTML = '';
+            
+            tabData[currentTab].code.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-line';
+                div.id = 'line-' + index;
+                div.innerHTML = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                if(line.trim() === "") div.innerHTML = "&nbsp;";
+                container.appendChild(div);
+            });
+        }
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            loadTabCode();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.code-line').forEach(el => {
+                el.classList.remove('active-line', 'error-line');
+            });
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            const memContainer = document.getElementById('memContainer');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            let firstLine = null;
+            step.lines.forEach(lineNum => {
+                let el = document.getElementById('line-' + lineNum);
+                if(el) {
+                    el.classList.add(step.isError ? 'error-line' : 'active-line');
+                    if(!firstLine) firstLine = el;
+                }
+            });
+            
+            if(firstLine) {
+                firstLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            document.getElementById('vizText').innerText = step.text;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            // Визуализация на променливите в паметта
+            if (step.vars && step.vars.length > 0) {
+                memContainer.style.display = 'flex';
+                memContainer.innerHTML = '';
+                step.vars.forEach(v => {
+                    const box = document.createElement('div');
+                    box.className = 'mem-box' + (v.hl ? ' highlight' : '');
+                    box.innerHTML = `<div class="mem-name">${v.name}</div><div class="mem-val">${v.val}</div>`;
+                    memContainer.appendChild(box);
+                });
+            } else {
+                memContainer.style.display = 'none';
+            }
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 25 && newWidthPercent < 75) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        loadTabCode();
+        updateUI();
+    </script>
+</body>
+</html>

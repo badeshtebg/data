@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача 5: По-малкото - Бъдеще за таланти</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-TMY76ERDRX');
+    </script>
+
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #ff9f43;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .meta-info {
+            color: #95a5a6;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-top: 5px; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #ff9f43; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Таблици в текста */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; color: #2c3e50; }
+        td { font-family: Consolas, monospace; font-size: 1rem; font-weight: bold; }
+
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #fff8e7; border-left: 4px solid #ff9f43; padding: 15px; margin-top: 15px; border-radius: 4px; color: #7f4f00; font-size: 0.95rem; font-weight: bold;}
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #ff9f43; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { 
+            flex: 0 0 auto; 
+            border: 2px dashed #bdc3c7; 
+            border-radius: 8px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start; 
+            background-color: #ecf0f1; 
+            position: relative; 
+            min-height: 205px; 
+            padding: 15px; 
+            gap: 12px;
+        }
+        
+        .step-icon {
+            font-size: 3.2rem;
+            line-height: 1;
+            margin-bottom: 2px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Визуални кутийки за памет (RAM) */
+        .mem-container {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 5px 0;
+        }
+        .mem-box {
+            background-color: #ffffff;
+            border: 2px solid #ff9f43;
+            border-radius: 8px;
+            min-width: 90px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .mem-box.highlight {
+            border-color: #ee5253;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(238, 82, 83, 0.3);
+        }
+        .mem-name {
+            background-color: #ff9f43;
+            color: white;
+            font-family: Consolas, monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 3px 8px;
+        }
+        .mem-box.highlight .mem-name {
+            background-color: #ee5253;
+        }
+        .mem-val {
+            font-family: Consolas, monospace;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 8px 10px;
+        }
+
+        .console-box { 
+            display: none; 
+            background-color: #0c0c0c; 
+            border: 2px solid #555; 
+            border-top: 20px solid #ccc; 
+            border-radius: 5px 5px 0 0; 
+            padding: 10px; 
+            width: 90%; 
+            max-width: 450px; 
+            min-height: 60px; 
+            font-family: Consolas, 'Courier New', monospace; 
+            font-size: 13px; 
+            position: relative; 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3); 
+            margin-top: auto;
+        }
+        .console-box::before { 
+            content: "C:\\Windows\\System32\\cmd.exe"; 
+            position: absolute; 
+            top: -18px; 
+            left: 10px; 
+            color: #333; 
+            font-size: 11px; 
+            font-family: 'Segoe UI', sans-serif; 
+            font-weight: bold; 
+        }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 45px; max-width: 92%;}
+        
+        /* Зона за Постъпкови обяснения и Логически модел (Вместо код) */
+        .formula-container { 
+            background-color: #222f3e; 
+            border-radius: 8px; 
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6); 
+            flex-grow: 1; 
+            min-height: 250px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .math-display {
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-family: Consolas, 'Fira Code', monospace;
+            text-align: center;
+            line-height: 1.7;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            width: 100%;
+        }
+
+        .math-highlight { color: #ff9f43; font-weight: bold; }
+        .math-operator { color: #feca57; margin: 0 6px; font-weight: bold; }
+        .math-true { color: #1dd1a1; font-weight: bold; }
+        .math-false { color: #ff6b6b; font-weight: bold; }
+        .math-result { color: #48dbfb; font-weight: bold; font-size: 1.9rem; display: block; margin-top: 10px;}
+        .math-title { color: #feca57; font-size: 1.25rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Segoe UI', sans-serif; font-weight: bold;}
+
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #ff9f43; color: white; font-size: 15px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #e67e22; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../tasks-e.html" class="back-to-home">← Назад към задачите</a>
+            
+            <div class="meta-info">РШИ Варна | Време: 1 с. | Памет: 256 MB<span class="cite-hidden">[cite: 14]</span></div>
+            <h1>ЗАДАЧА 5: По-малкото<span class="cite-hidden">[cite: 14]</span></h1>
+            
+            <p>Да се напише програма <code>smaller</code>, която прочита две цели числа <strong>a</strong> и <strong>b</strong>.<span class="cite-hidden">[cite: 14]</span> Програмата да намира и да извежда <strong>поредния номер</strong> на по-малкото от двете числа.<span class="cite-hidden">[cite: 14]</span> Ако двете числа са равни, програмата да извежда <strong>1</strong>.<span class="cite-hidden">[cite: 14]</span></p>
+            
+            <div class="hint-box">
+                💡 Подсказка: Внимание! Задачата НЕ иска да отпечатате самото по-малко число, а неговия <strong>пореден номер</strong> (<code>1</code> за първото число <code>a</code> или <code>2</code> за второто число <code>b</code>)!<span class="cite-hidden">[cite: 14]</span> Тъй като при равни числа също трябва да изведем <code>1</code>, можем да проверим с едно условие: ако <code>a &le; b</code>, извеждаме <code>1</code>, а в противен случай (<code>else</code>) извеждаме <code>2</code>!<span class="cite-hidden">[cite: 4, 14]</span>
+            </div>
+
+            <h3>Вход<span class="cite-hidden">[cite: 14]</span></h3>
+            <p>От единствения ред на стандартния вход се въвеждат две цели числа, разделени с един интервал разстояние.<span class="cite-hidden">[cite: 14]</span></p>
+
+            <h3>Изход<span class="cite-hidden">[cite: 14]</span></h3>
+            <p>Програмата трябва да отпечата едно цяло число – резултата от условието на задачата.<span class="cite-hidden">[cite: 14]</span></p>
+            
+            <h3>Ограничения<span class="cite-hidden">[cite: 14]</span></h3>
+            <ul>
+                <li>0 &le; <strong>a, b</strong> &le; 1000<span class="cite-hidden">[cite: 14]</span></li>
+            </ul>
+
+            <h3>Примери<span class="cite-hidden">[cite: 14]</span></h3>
+            <table>
+                <tr>
+                    <th>Примерен вход<span class="cite-hidden">[cite: 14]</span></th>
+                    <th>Изход за примера<span class="cite-hidden">[cite: 14]</span></th>
+                </tr>
+                <tr>
+                    <td>76 42<span class="cite-hidden">[cite: 14]</span></td>
+                    <td>2<span class="cite-hidden">[cite: 14]</span></td>
+                </tr>
+                <tr>
+                    <td>30 89<span class="cite-hidden">[cite: 14]</span></td>
+                    <td>1<span class="cite-hidden">[cite: 14]</span></td>
+                </tr>
+                <tr>
+                    <td>5 5<span class="cite-hidden">[cite: 14]</span></td>
+                    <td>1<span class="cite-hidden">[cite: 14]</span></td>
+                </tr>
+            </table>
+            
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Пример 1 (76 42)</button>
+            <button class="tab-btn" onclick="switchTab(1)">Пример 2 (30 89)</button>
+            <button class="tab-btn" onclick="switchTab(2)">Пример 3 (5 5)</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">🥇</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <!-- Динамични кутийки за памет -->
+            <div class="mem-container" id="memContainer" style="display: none;"></div>
+
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="formula-container" id="formulaContainer">
+            <div class="math-display" id="mathDisplay">
+                <!-- Логическият модел се визуализира тук -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Пример 1 (76 42)
+                steps: [
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Въвеждаме двете числа: първото число (№1) е a = 76, а второто число (№2) е b = 42.", 
+                        vars: [{name: "a (№ 1)", val: "76", hl: true}, {name: "b (№ 2)", val: "42", hl: true}],
+                        math: "<div class='math-title'>Входни данни</div>Първо число (№ 1): <span class='math-highlight'>a = 76</span><br>Второ число (№ 2): <span class='math-highlight'>b = 42</span>",
+                        showCon: true, conText: "76 42"
+                    },
+                    { 
+                        icon: "⚖️", 
+                        text: "Стъпка 2: Проверяваме дали първото число е по-малко или равно на второто (a <= b). Сравняваме 76 <= 42 – това е ЛЪЖА!", 
+                        vars: [{name: "a (№ 1)", val: "76"}, {name: "b (№ 2)", val: "42", hl: true}],
+                        math: "<div class='math-title'>Логическа проверка (a &le; b)</div>76 &le; 42 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА!</span><br><span style='font-size: 1.2rem; color: #dfe6e9;'>По-малкото число е второто (42)</span>",
+                        showCon: true, conText: "76 42"
+                    },
+                    { 
+                        icon: "🖨️", 
+                        text: "Стъпка 3: Тъй като по-малкото число е b (42), не отпечатваме 42, а неговия пореден номер: 2!", 
+                        vars: [{name: "a (№ 1)", val: "76"}, {name: "b (№ 2)", val: "42", hl: true}],
+                        math: "<div class='math-title'>Краен резултат</div>По-малко е второто число (b)<span class='math-result'>Пореден номер: 2</span>",
+                        showCon: true, conText: "76 42\n2"
+                    }
+                ]
+            },
+            {
+                // Таб 1: Пример 2 (30 89)
+                steps: [
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Въвеждаме двете числа: първото число (№1) е a = 30, а второто число (№2) е b = 89.", 
+                        vars: [{name: "a (№ 1)", val: "30", hl: true}, {name: "b (№ 2)", val: "89", hl: true}],
+                        math: "<div class='math-title'>Входни данни</div>Първо число (№ 1): <span class='math-highlight'>a = 30</span><br>Второ число (№ 2): <span class='math-highlight'>b = 89</span>",
+                        showCon: true, conText: "30 89"
+                    },
+                    { 
+                        icon: "⚖️", 
+                        text: "Стъпка 2: Проверяваме условието (a <= b). Сравняваме 30 <= 89 – това е ВЯРНО!", 
+                        vars: [{name: "a (№ 1)", val: "30", hl: true}, {name: "b (№ 2)", val: "89"}],
+                        math: "<div class='math-title'>Логическа проверка (a &le; b)</div>30 &le; 89 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО!</span><br><span style='font-size: 1.2rem; color: #dfe6e9;'>По-малкото число е първото (30)</span>",
+                        showCon: true, conText: "30 89"
+                    },
+                    { 
+                        icon: "🖨️", 
+                        text: "Стъпка 3: По-малкото число е първото (a), затова отпечатваме неговия пореден номер: 1!", 
+                        vars: [{name: "a (№ 1)", val: "30", hl: true}, {name: "b (№ 2)", val: "89"}],
+                        math: "<div class='math-title'>Краен резултат</div>По-малко е първото число (a)<span class='math-result'>Пореден номер: 1</span>",
+                        showCon: true, conText: "30 89\n1"
+                    }
+                ]
+            },
+            {
+                // Таб 2: Пример 3 (5 5)
+                steps: [
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Въвеждаме две еднакви числа: a = 5 и b = 5.", 
+                        vars: [{name: "a (№ 1)", val: "5", hl: true}, {name: "b (№ 2)", val: "5", hl: true}],
+                        math: "<div class='math-title'>Входни данни</div>Първо число (№ 1): <span class='math-highlight'>a = 5</span><br>Второ число (№ 2): <span class='math-highlight'>b = 5</span>",
+                        showCon: true, conText: "5 5"
+                    },
+                    { 
+                        icon: "🤝", 
+                        text: "Стъпка 2: Проверяваме (a <= b) -> (5 <= 5). Понеже числата са равни, условието <= е ВЯРНО (а и по условие при равни числа извеждаме 1)!", 
+                        vars: [{name: "a (№ 1)", val: "5", hl: true}, {name: "b (№ 2)", val: "5"}],
+                        math: "<div class='math-title'>Логическа проверка (a &le; b)</div>5 &le; 5 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (числата са равни)!</span><br><span style='font-size: 1.2rem; color: #dfe6e9;'>По условие при равенство избираме № 1</span>",
+                        showCon: true, conText: "5 5"
+                    },
+                    { 
+                        icon: "🖨️", 
+                        text: "Стъпка 3: Отпечатваме на екрана числото 1.", 
+                        vars: [{name: "a (№ 1)", val: "5", hl: true}, {name: "b (№ 2)", val: "5"}],
+                        math: "<div class='math-title'>Краен резултат</div>Двете числа са равни<span class='math-result'>Изход по условие: 1</span>",
+                        showCon: true, conText: "5 5\n1"
+                    }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            updateUI();
+        }
+
+        function updateUI() {
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            const mathDisplay = document.getElementById('mathDisplay');
+            const memContainer = document.getElementById('memContainer');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            document.getElementById('vizText').innerText = step.text;
+            mathDisplay.innerHTML = step.math;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.vars && step.vars.length > 0) {
+                memContainer.style.display = 'flex';
+                memContainer.innerHTML = '';
+                step.vars.forEach(v => {
+                    const box = document.createElement('div');
+                    box.className = 'mem-box' + (v.hl ? ' highlight' : '');
+                    box.innerHTML = `<div class="mem-name">${v.name}</div><div class="mem-val">${v.val}</div>`;
+                    memContainer.appendChild(box);
+                });
+            } else {
+                memContainer.style.display = 'none';
+            }
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        // Първоначално зареждане
+        updateUI();
+    </script>
+</body>
+</html>

@@ -189,7 +189,7 @@
 
         .page-header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
             animation: fadeInDown 0.8s ease-out;
         }
 
@@ -224,10 +224,122 @@
             font-weight: 600;
         }
 
+        /* Accordion Styles */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .accordion-item {
+            background: rgba(26, 29, 45, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .accordion-item.active {
+            border-color: rgba(0, 245, 140, 0.3);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 245, 140, 0.08);
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 24px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border: none;
+            color: var(--text-light);
+            font-family: var(--font-main);
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .accordion-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--green);
+        }
+
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .accordion-title i {
+            color: var(--green);
+            font-size: 26px;
+            width: 35px;
+            text-align: center;
+        }
+
+        .accordion-badge {
+            font-size: 13px;
+            font-family: var(--font-code);
+            background: rgba(0, 245, 140, 0.1);
+            color: var(--green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 245, 140, 0.2);
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .accordion-icon {
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+            color: var(--green);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.4s ease;
+            padding: 0 30px;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 5000px;
+            padding: 10px 30px 35px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-section-msg {
+            color: var(--text-muted);
+            font-size: 16px;
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+        }
+
+        .empty-section-msg i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        /* Grid & Cards */
         .tasks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
+            margin-top: 20px;
         }
 
         .task-card {
@@ -348,6 +460,19 @@
             .page-header h1 {
                 font-size: 32px;
             }
+
+            .accordion-header {
+                font-size: 19px;
+                padding: 18px 20px;
+            }
+
+            .accordion-badge {
+                display: none;
+            }
+
+            .accordion-item.active .accordion-content {
+                padding: 10px 20px 25px 20px;
+            }
         }
     </style>
 </head>
@@ -355,7 +480,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() {dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
     gtag('config', 'G-TMY76ERDRX');
@@ -388,194 +513,341 @@
                 уверен в писането на код.</p>
         </div>
 
-        <div class="tasks-grid">
+        <div class="accordion">
 
-            <!-- Task 1 -->
-            <div class="task-card" style="--card-color: var(--primary); --card-color-rgb: 0, 240, 255;">
-                <div class="task-number">01</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-ruler-combined"></i>
+            <!-- Раздел 1: Начални познания (затворен по подразбиране) -->
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span class="accordion-title">
+                        <i class="fa-solid fa-rocket"></i>
+                        Начални познания
+                        <span class="accordion-badge">15 задачи</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="tasks-grid">
+
+                        <!-- Task 1 -->
+                        <div class="task-card" style="--card-color: var(--primary); --card-color-rgb: 0, 240, 255;">
+                            <div class="task-number">01</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-ruler-combined"></i>
+                            </div>
+                            <h3>Квадрат</h3>
+                            <p>Потребителят въвежда едно цяло число – дължината на страната на квадрат. Напишете
+                                програма, която
+                                пресмята и отпечатва неговия периметър.</p>
+                            <a href="tasks/task1-square.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 2 -->
+                        <div class="task-card" style="--card-color: var(--accent); --card-color-rgb: 255, 204, 0;">
+                            <div class="task-number">02</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-pen-ruler"></i>
+                            </div>
+                            <h3>Правоъгълник</h3>
+                            <p>Потребителят въвежда две цели числа – дължините на страните на правоъгълник. Напишете
+                                програма, която
+                                пресмята и отпечатва неговия периметър.</p>
+                            <a href="tasks/task2-rect2.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 3 -->
+                        <div class="task-card" style="--card-color: var(--green); --card-color-rgb: 0, 245, 140;">
+                            <div class="task-number">03</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-cube"></i>
+                            </div>
+                            <h3>Куб</h3>
+                            <p>Потребителят въвежда едно цяло число – дължината на ръба на куб. Напишете програма, която
+                                пресмята и
+                                отпечатва неговия обем.</p>
+                            <a href="tasks/task3-cube.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 4 -->
+                        <div class="task-card" style="--card-color: var(--secondary); --card-color-rgb: 247, 37, 133;">
+                            <div class="task-number">04</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-bus"></i>
+                            </div>
+                            <h3>Екскурзия</h3>
+                            <p>Пресметни кога учениците ще пристигнат в хотела! Използвай магията на делението (/) и
+                                остатъка (%),
+                                за да пребориш "Капана на полунощ".</p>
+                            <a href="tasks/task4-trip.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 5 -->
+                        <div class="task-card" style="--card-color: var(--purple); --card-color-rgb: 177, 0, 255;">
+                            <div class="task-number">05</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <h3>Робот</h3>
+                            <p>Сглоби гигантски робот част по част! Превърни всичко в сантиметри и пресметни финалната
+                                му височина в
+                                метри и сантиметри.</p>
+                            <a href="tasks/task5-robot.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 6 -->
+                        <div class="task-card" style="--card-color: #ff6b00; --card-color-rgb: 255, 107, 0;">
+                            <div class="task-number">06</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-rocket"></i>
+                            </div>
+                            <h3>Мисия</h3>
+                            <p>Подготви космическия кораб за полет до Марс! Пресметни общото тегло на провизиите и
+                                марсохода в
+                                тонове и килограми.</p>
+                            <a href="tasks/task6-mission.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 7 -->
+                        <div class="task-card" style="--card-color: #ff003c; --card-color-rgb: 255, 0, 60;">
+                            <div class="task-number">07</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-user-secret"></i>
+                            </div>
+                            <h3>Кибер агент</h3>
+                            <p>Влез в ролята на таен агент! Пресметни колко място заемат свалените секретни файлове на
+                                флашката в
+                                килобайти и байтове (1 KB = 1024 байта).</p>
+                            <a href="tasks/task7-cyber.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 8 -->
+                        <div class="task-card" style="--card-color: #3b82f6; --card-color-rgb: 59, 130, 246;">
+                            <div class="task-number">08</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-plus-minus"></i>
+                            </div>
+                            <h3>Сума и произведение</h3>
+                            <p>Отдели цифрите на двуцифрено число с помощта на деление и остатък, за да пресметнеш
+                                тяхната сума и
+                                произведение!</p>
+                            <a href="tasks/task8-sumprod.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 9 -->
+                        <div class="task-card" style="--card-color: #10ac84; --card-color-rgb: 16, 172, 132;">
+                            <div class="task-number">09</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                            </div>
+                            <h3>Обратно</h3>
+                            <p>Обърни цифрите на двуцифрено число наобратно и умножи резултата! Упражни логиката за
+                                отделяне на
+                                единици и десетици.</p>
+                            <a href="tasks/task9-obratno.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 10 -->
+                        <div class="task-card" style="--card-color: #8e44ad; --card-color-rgb: 142, 68, 173;">
+                            <div class="task-number">10</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                            <h3>Отвара</h3>
+                            <p>Помогни на магьосника Мерелин! Използвай целочислено деление и остатък, за да превърнеш
+                                огромни
+                                броеве секунди в часове, минути и секунди.</p>
+                            <a href="tasks/task10-otvara.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 11 -->
+                        <div class="task-card" style="--card-color: #f1c40f; --card-color-rgb: 241, 196, 15;">
+                            <div class="task-number">11</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                            <h3>Пиратска банка</h3>
+                            <p>Обмени златните монети на капитан Джак за диаманти и рубини! Приложи логиката за отделяне
+                                на стотици,
+                                десетици и единици чрез деление и остатък.</p>
+                            <a href="tasks/task11-banka.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 12 -->
+                        <div class="task-card" style="--card-color: #00f58c; --card-color-rgb: 0, 245, 140;">
+                            <div class="task-number">12</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-unlock-keyhole"></i>
+                            </div>
+                            <h3>Таен шифър</h3>
+                            <p>Помогни на агент 007 да отвори трезора! Разглоби трицифрено число и премести стотиците
+                                най-вдясно, за
+                                да сглобиш тайната парола.</p>
+                            <a href="tasks/task12-cipher.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 13 -->
+                        <div class="task-card" style="--card-color: #d35400; --card-color-rgb: 211, 84, 0;">
+                            <div class="task-number">13</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-key"></i>
+                            </div>
+                            <h3>Скритият ключ</h3>
+                            <p>Помогни на изследователя да разчете кода на древната врата! Използвай деление и остатък,
+                                за да
+                                извлечеш цифрата на стотиците от голямо число.</p>
+                            <a href="tasks/task13-key.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 14 -->
+                        <div class="task-card" style="--card-color: #f39c12; --card-color-rgb: 243, 156, 18;">
+                            <div class="task-number">14</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-satellite-dish"></i>
+                            </div>
+                            <h3>Разузнавателен търтей</h3>
+                            <p>Синхронизирай камерите на дрона! Използвай деление и остатък, за да изчислиш колко пълни
+                                минути са
+                                изминали в последния час.</p>
+                            <a href="tasks/task14-drone.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                        <!-- Task 15 -->
+                        <div class="task-card" style="--card-color: #e67e22; --card-color-rgb: 230, 126, 34;">
+                            <div class="task-number">15</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-paw"></i>
+                            </div>
+                            <h3>Дневникът на Айра</h3>
+                            <p>Помогни в грижите за малката Айра! Използвай остатък от деление на 7, за да разбереш в
+                                кой ден от
+                                седмицата се пада дадена дата от годината.</p>
+                            <a href="tasks/task15-aira.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
+
+                    </div>
                 </div>
-                <h3>Квадрат</h3>
-                <p>Потребителят въвежда едно цяло число – дължината на страната на квадрат. Напишете програма, която
-                    пресмята и отпечатва неговия периметър.</p>
-                <a href="tasks/task1-square.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
             </div>
 
-            <!-- Task 2 -->
-            <div class="task-card" style="--card-color: var(--accent); --card-color-rgb: 255, 204, 0;">
-                <div class="task-number">02</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-pen-ruler"></i>
-                </div>
-                <h3>Правоъгълник</h3>
-                <p>Потребителят въвежда две цели числа – дължините на страните на правоъгълник. Напишете програма, която
-                    пресмята и отпечатва неговия периметър.</p>
-                <a href="tasks/task2-rect2.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
-            </div>
+            <!-- Раздел 2: Условен оператор (затворен по подразбиране) -->
+            <div class="accordion-item">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span class="accordion-title">
+                        <i class="fa-solid fa-code-branch"></i>
+                        Условен оператор
+                        <span class="accordion-badge">7 задачи</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="tasks-grid">
 
-            <!-- Task 3 -->
-            <div class="task-card" style="--card-color: var(--green); --card-color-rgb: 0, 245, 140;">
-                <div class="task-number">03</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-cube"></i>
-                </div>
-                <h3>Куб</h3>
-                <p>Потребителят въвежда едно цяло число – дължината на ръба на куб. Напишете програма, която пресмята и
-                    отпечатва неговия обем.</p>
-                <a href="tasks/task3-cube.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
-            </div>
+                        <!-- Task 16 -->
+                        <div class="task-card" style="--card-color: #00b4d8; --card-color-rgb: 0, 180, 216;">
+                            <div class="task-number">16</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-square-minus"></i>
+                            </div>
+                            <h3>Минус 8</h3>
+                            <p>Провери дали въведеното число е по-голямо от 10! Ако условието е вярно, извади 8 от него
+                                с помощта на условния оператор if.</p>
+                            <a href="tasks/task16-minus8.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
 
-            <!-- Task 4 -->
-            <div class="task-card" style="--card-color: var(--secondary); --card-color-rgb: 247, 37, 133;">
-                <div class="task-number">04</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-bus"></i>
-                </div>
-                <h3>Екскурзия</h3>
-                <p>Пресметни кога учениците ще пристигнат в хотела! Използвай магията на делението (/) и остатъка (%),
-                    за да пребориш "Капана на полунощ".</p>
-                <a href="tasks/task4-trip.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
-            </div>
+                        <!-- Task 17 -->
+                        <div class="task-card" style="--card-color: #f72585; --card-color-rgb: 247, 37, 133;">
+                            <div class="task-number">17</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-plus-minus"></i>
+                            </div>
+                            <h3>Минус и плюс</h3>
+                            <p>Използвай пълната форма на условния оператор if...else! Извади 8, ако числото е по-голямо
+                                от 10, или прибави 6 в противен случай.</p>
+                            <a href="tasks/task17-minusplus.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
 
-            <!-- Task 5 -->
-            <div class="task-card" style="--card-color: var(--purple); --card-color-rgb: 177, 0, 255;">
-                <div class="task-number">05</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-robot"></i>
-                </div>
-                <h3>Робот</h3>
-                <p>Сглоби гигантски робот част по част! Превърни всичко в сантиметри и пресметни финалната му височина в
-                    метри и сантиметри.</p>
-                <a href="tasks/task5-robot.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
-            </div>
+                        <!-- Task 18 -->
+                        <div class="task-card" style="--card-color: #9b59b6; --card-color-rgb: 155, 89, 182;">
+                            <div class="task-number">18</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-list-ol"></i>
+                            </div>
+                            <h3>Десет</h3>
+                            <p>Преброй колко от трите въведени числа са по-големи от 10! Научи как се използва
+                                променлива-брояч в комбинация с условния оператор if.</p>
+                            <a href="tasks/task18-ten.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
 
-            <!-- Task 6 -->
-            <div class="task-card" style="--card-color: #ff6b00; --card-color-rgb: 255, 107, 0;">
-                <div class="task-number">06</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-rocket"></i>
-                </div>
-                <h3>Мисия</h3>
-                <p>Подготви космическия кораб за полет до Марс! Пресметни общото тегло на провизиите и марсохода в
-                    тонове и килограми.</p>
-                <a href="tasks/task6-mission.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
-            </div>
+                        <!-- Task 19 -->
+                        <div class="task-card" style="--card-color: #2ecc71; --card-color-rgb: 46, 204, 113;">
+                            <div class="task-number">19</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </div>
+                            <h3>Десет 2</h3>
+                            <p>Използвай два отделни брояча! Намери едновременно колко от трите числа са по-големи от 10
+                                и колко са по-малки от 10.</p>
+                            <a href="tasks/task19-ten2.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
 
-            <!-- Task 7 -->
-            <div class="task-card" style="--card-color: #ff003c; --card-color-rgb: 255, 0, 60;">
-                <div class="task-number">07</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-user-secret"></i>
-                </div>
-                <h3>Кибер агент</h3>
-                <p>Влез в ролята на таен агент! Пресметни колко място заемат свалените секретни файлове на флашката в
-                    килобайти и байтове (1 KB = 1024 байта).</p>
-                <a href="tasks/task7-cyber.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
-            </div>
+                        <!-- Task 20 -->
+                        <div class="task-card" style="--card-color: #ff9f43; --card-color-rgb: 255, 159, 67;">
+                            <div class="task-number">20</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-less-than"></i>
+                            </div>
+                            <h3>По-малкото</h3>
+                            <p>Сравни две числа и открий кое от тях е по-малко! Внимавай – програмата трябва да отпечата
+                                поредния номер на числото (1 или 2), а не самата му стойност.</p>
+                            <a href="tasks/task20-smaller.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
 
-            <!-- Task 8 -->
-            <div class="task-card" style="--card-color: #3b82f6; --card-color-rgb: 59, 130, 246;">
-                <div class="task-number">08</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-plus-minus"></i>
-                </div>
-                <h3>Сума и произведение</h3>
-                <p>Отдели цифрите на двуцифрено число с помощта на деление и остатък, за да пресметнеш тяхната сума и
-                    произведение!</p>
-                <a href="tasks/task8-sumprod.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
-            </div>
+                        <!-- Task 21 -->
+                        <div class="task-card" style="--card-color: #e74c3c; --card-color-rgb: 231, 76, 60;">
+                            <div class="task-number">21</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-greater-than"></i>
+                            </div>
+                            <h3>По-голямото</h3>
+                            <p>Подреди две числа по големина! Напиши програма, която ги сравнява и винаги извежда първо
+                                по-голямото, а след него по-малкото число.</p>
+                            <a href="tasks/task21-larger.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
 
-            <!-- Task 9 -->
-            <div class="task-card" style="--card-color: #10ac84; --card-color-rgb: 16, 172, 132;">
-                <div class="task-number">09</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
-                </div>
-                <h3>Обратно</h3>
-                <p>Обърни цифрите на двуцифрено число наобратно и умножи резултата! Упражни логиката за отделяне на
-                    единици и десетици.</p>
-                <a href="tasks/task9-obratno.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
-            </div>
+                        <!-- Task 22 -->
+                        <div class="task-card" style="--card-color: #00cec9; --card-color-rgb: 0, 206, 201;">
+                            <div class="task-number">22</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-equals"></i>
+                            </div>
+                            <h3>Равни ли са?</h3>
+                            <p>Провери дали две числа са равни или различни! Ако са различни, запиши сумата им и в двете
+                                променливи, а ако са равни – ги занули.</p>
+                            <a href="tasks/task22-equal.html" class="btn-task">Реши задачата <i
+                                    class="fa-solid fa-keyboard"></i></a>
+                        </div>
 
-            <!-- Task 10 -->
-            <div class="task-card" style="--card-color: #8e44ad; --card-color-rgb: 142, 68, 173;">
-                <div class="task-number">10</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-flask"></i>
+                    </div>
                 </div>
-                <h3>Отвара</h3>
-                <p>Помогни на магьосника Мерелин! Използвай целочислено деление и остатък, за да превърнеш огромни
-                    броеве секунди в часове, минути и секунди.</p>
-                <a href="tasks/task10-otvara.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
-            </div>
-
-            <!-- Task 11 -->
-            <div class="task-card" style="--card-color: #f1c40f; --card-color-rgb: 241, 196, 15;">
-                <div class="task-number">11</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-coins"></i>
-                </div>
-                <h3>Пиратска банка</h3>
-                <p>Обмени златните монети на капитан Джак за диаманти и рубини! Приложи логиката за отделяне на стотици,
-                    десетици и единици чрез деление и остатък.</p>
-                <a href="tasks/task11-banka.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
-            </div>
-
-            <!-- Task 12 -->
-            <div class="task-card" style="--card-color: #00f58c; --card-color-rgb: 0, 245, 140;">
-                <div class="task-number">12</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-unlock-keyhole"></i>
-                </div>
-                <h3>Таен шифър</h3>
-                <p>Помогни на агент 007 да отвори трезора! Разглоби трицифрено число и премести стотиците най-вдясно, за
-                    да сглобиш тайната парола.</p>
-                <a href="tasks/task12-cipher.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
-            </div>
-
-            <!-- Task 13 -->
-            <div class="task-card" style="--card-color: #d35400; --card-color-rgb: 211, 84, 0;">
-                <div class="task-number">13</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-key"></i>
-                </div>
-                <h3>Скритият ключ</h3>
-                <p>Помогни на изследователя да разчете кода на древната врата! Използвай деление и остатък, за да
-                    извлечеш цифрата на стотиците от голямо число.</p>
-                <a href="tasks/task13-key.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
-            </div>
-
-            <!-- Task 14 -->
-            <div class="task-card" style="--card-color: #f39c12; --card-color-rgb: 243, 156, 18;">
-                <div class="task-number">14</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-satellite-dish"></i>
-                </div>
-                <h3>Разузнавателен търтей</h3>
-                <p>Синхронизирай камерите на дрона! Използвай деление и остатък, за да изчислиш колко пълни минути са
-                    изминали в последния час.</p>
-                <a href="tasks/task14-drone.html" class="btn-task">Реши задачата <i
-                        class="fa-solid fa-keyboard"></i></a>
-            </div>
-
-            <!-- Task 15 -->
-            <div class="task-card" style="--card-color: #e67e22; --card-color-rgb: 230, 126, 34;">
-                <div class="task-number">15</div>
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-paw"></i>
-                </div>
-                <h3>Дневникът на Айра</h3>
-                <p>Помогни в грижите за малката Айра! Използвай остатък от деление на 7, за да разбереш в кой ден от
-                    седмицата се пада дадена дата от годината.</p>
-                <a href="tasks/task15-aira.html" class="btn-task">Реши задачата <i class="fa-solid fa-keyboard"></i></a>
             </div>
 
         </div>
@@ -583,9 +855,17 @@
 
     <footer>
         <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
             Милен Мавродиев е автор на сайта.
         </div>
     </footer>
+
+    <script>
+        function toggleAccordion(button) {
+            const item = button.parentElement;
+            item.classList.toggle('active');
+        }
+    </script>
 
 </body>
 

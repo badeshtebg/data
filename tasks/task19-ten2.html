@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача 4: Десет 2 - Бъдеще за таланти</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMY76ERDRX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-TMY76ERDRX');
+    </script>
+
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            overflow: hidden; 
+        }
+        
+        /* Скриване на задължителните цитати от потребителя */
+        .cite-hidden {
+            display: none;
+        }
+
+        /* Панели */
+        .panel { 
+            padding: 25px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel { 
+            border-right: 2px solid #ddd; 
+            background-color: #ffffff; 
+            flex: 0 0 50%;
+            min-width: 20%;
+        }
+        .right-panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background-color: #fdfdfd; 
+            flex: 1;
+            min-width: 20%;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        
+        /* Съдържание на левия панел */
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Сплитер / Разделител */
+        .resizer {
+            width: 6px;
+            background-color: #ddd;
+            cursor: col-resize; 
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #2ecc71;
+        }
+
+        /* Стил за бутона "Назад" */
+        .back-to-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .back-to-home:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            border-color: #bdc3c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .meta-info {
+            color: #95a5a6;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 { color: #2c3e50; font-size: 1.8rem; margin-top: 5px; margin-bottom: 15px; }
+        h3 { color: #34495e; border-bottom: 2px solid #2ecc71; padding-bottom: 5px; margin-top: 25px; font-size: 1.2rem;}
+        p, ul, li, ol { line-height: 1.6; color: #333; font-size: 0.95rem; margin-bottom: 10px;}
+        
+        /* Таблици в текста */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; color: #2c3e50; }
+        td { font-family: Consolas, monospace; font-size: 1rem; font-weight: bold; }
+
+        /* Подсказка / Обобщение */
+        .hint-box { background-color: #eafaf1; border-left: 4px solid #2ecc71; padding: 15px; margin-top: 15px; border-radius: 4px; color: #145a32; font-size: 0.95rem; font-weight: bold;}
+
+        /* Авторски права */
+        .copyright {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Табове в десния панел */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #bdc3c7;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { background-color: #dfe6e9; color: #2c3e50; }
+        .tab-btn.active { background-color: #2ecc71; color: white; }
+
+        /* Визуализация - Памет и Конзола */
+        .visualization-area { 
+            flex: 0 0 auto; 
+            border: 2px dashed #bdc3c7; 
+            border-radius: 8px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start; 
+            background-color: #ecf0f1; 
+            position: relative; 
+            min-height: 205px; 
+            padding: 15px; 
+            gap: 12px;
+        }
+        
+        .step-icon {
+            font-size: 3.2rem;
+            line-height: 1;
+            margin-bottom: 2px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Визуални кутийки за памет (RAM) */
+        .mem-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 5px 0;
+        }
+        .mem-box {
+            background-color: #ffffff;
+            border: 2px solid #2ecc71;
+            border-radius: 8px;
+            min-width: 60px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .mem-box.highlight {
+            border-color: #f39c12;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        }
+        .mem-name {
+            background-color: #2ecc71;
+            color: white;
+            font-family: Consolas, monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 3px 8px;
+        }
+        .mem-box.highlight .mem-name {
+            background-color: #f39c12;
+        }
+        .mem-val {
+            font-family: Consolas, monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 6px 10px;
+        }
+
+        .console-box { 
+            display: none; 
+            background-color: #0c0c0c; 
+            border: 2px solid #555; 
+            border-top: 20px solid #ccc; 
+            border-radius: 5px 5px 0 0; 
+            padding: 10px; 
+            width: 90%; 
+            max-width: 450px; 
+            min-height: 60px; 
+            font-family: Consolas, 'Courier New', monospace; 
+            font-size: 13px; 
+            position: relative; 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3); 
+            margin-top: auto;
+        }
+        .console-box::before { 
+            content: "C:\\Windows\\System32\\cmd.exe"; 
+            position: absolute; 
+            top: -18px; 
+            left: 10px; 
+            color: #333; 
+            font-size: 11px; 
+            font-family: 'Segoe UI', sans-serif; 
+            font-weight: bold; 
+        }
+        .console-output { color: #fff; font-weight: bold; white-space: pre-wrap; line-height: 1.4; }
+        
+        .viz-text { text-align: center; font-size: 1rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; min-height: 45px; max-width: 92%;}
+        
+        /* Зона за Постъпкови обяснения и Логически модел (Вместо код) */
+        .formula-container { 
+            background-color: #1e272e; 
+            border-radius: 8px; 
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6); 
+            flex-grow: 1; 
+            min-height: 250px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .math-display {
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-family: Consolas, 'Fira Code', monospace;
+            text-align: center;
+            line-height: 1.7;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            width: 100%;
+        }
+
+        .math-highlight { color: #2ecc71; font-weight: bold; }
+        .math-operator { color: #f39c12; margin: 0 6px; font-weight: bold; }
+        .math-true { color: #2ecc71; font-weight: bold; }
+        .math-false { color: #ff5e57; font-weight: bold; }
+        .math-result { color: #00d8d6; font-weight: bold; font-size: 1.85rem; display: block; margin-top: 10px;}
+        .math-title { color: #f39c12; font-size: 1.25rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Segoe UI', sans-serif; font-weight: bold;}
+
+        /* Контроли */
+        .controls { display: flex; gap: 15px; justify-content: center; margin-top: 5px; margin-bottom: 15px;}
+        button.nav-btn { padding: 10px 20px; border: none; border-radius: 5px; background-color: #2ecc71; color: white; font-size: 15px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;}
+        button.nav-btn:hover { background-color: #27ae60; }
+        button.nav-btn:disabled { background-color: #95a5a6; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel left-panel" id="leftPanel">
+        <div class="content-wrapper">
+            <a href="../tasks-e.html" class="back-to-home">← Назад към задачите</a>
+            
+            <div class="meta-info">РШИ Варна | Време: 1 с. | Памет: 256 MB<span class="cite-hidden">[cite: 16]</span></div>
+            <h1>ЗАДАЧА 4: Десет 2<span class="cite-hidden">[cite: 16]</span></h1>
+            
+            <p>Да се напише програма <code>ten</code>, която прочита три цели числа <strong>a</strong>, <strong>b</strong> и <strong>c</strong>.<span class="cite-hidden">[cite: 16]</span> Програмата да намира и да извежда броя на тези числа, които са по-големи от 10, както и броя на тези, които са по-малки от 10.<span class="cite-hidden">[cite: 16]</span></p>
+            
+            <div class="hint-box">
+                💡 Подсказка: Тук ни трябват ДВА отделни брояча (например <code>br1 = 0</code> за по-големите от 10 и <code>br2 = 0</code> за по-малките от 10)! Внимавайте: защо не използваме просто <code>else</code>? Защото ако някое число е точно <strong>10</strong>, то не е нито по-голямо от 10, нито по-малко от 10 и не трябва да се брои никъде!
+            </div>
+
+            <h3>Вход<span class="cite-hidden">[cite: 16]</span></h3>
+            <p>От единствения ред на стандартния вход се въвеждат три цели числа, разделени с един интервал разстояние.<span class="cite-hidden">[cite: 16]</span></p>
+
+            <h3>Изход<span class="cite-hidden">[cite: 16]</span></h3>
+            <p>Програмата трябва да отпечата две цели числа, разделени с един интервал – резултатите от условието на задачата.<span class="cite-hidden">[cite: 16]</span></p>
+            
+            <h3>Ограничения<span class="cite-hidden">[cite: 16]</span></h3>
+            <ul>
+                <li>0 &le; <strong>a, b, c</strong> &le; 1000<span class="cite-hidden">[cite: 16]</span></li>
+            </ul>
+
+            <h3>Примери<span class="cite-hidden">[cite: 16]</span></h3>
+            <table>
+                <tr>
+                    <th>Примерен вход<span class="cite-hidden">[cite: 16]</span></th>
+                    <th>Изход за примера<span class="cite-hidden">[cite: 16]</span></th>
+                </tr>
+                <tr>
+                    <td>11 13 0<span class="cite-hidden">[cite: 16]</span></td>
+                    <td>2 1<span class="cite-hidden">[cite: 16]</span></td>
+                </tr>
+                <tr>
+                    <td>0 0 17<span class="cite-hidden">[cite: 16]</span></td>
+                    <td>1 2<span class="cite-hidden">[cite: 16]</span></td>
+                </tr>
+                <tr>
+                    <td>20 8 20<span class="cite-hidden">[cite: 16]</span></td>
+                    <td>2 1<span class="cite-hidden">[cite: 16]</span></td>
+                </tr>
+            </table>
+            
+        </div>
+        
+        <div class="copyright">
+            &copy; 2026 Бъдеще за таланти.<br>
+            Милен Мавродиев е автор на сайта.
+        </div>
+    </div>
+
+    <!-- Сплитер за преоразмеряване -->
+    <div class="resizer" id="resizer"></div>
+
+    <div class="panel right-panel">
+        
+        <!-- Навигация с табове -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Пример 1 (11 13 0)</button>
+            <button class="tab-btn" onclick="switchTab(1)">Пример 2 (0 0 17)</button>
+            <button class="tab-btn" onclick="switchTab(2)">Пример 3 (20 8 20)</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="step-icon" id="stepIcon">⚖️</div>
+            <div class="viz-text" id="vizText">Избери пример от табовете и натисни "Напред"!</div>
+            
+            <!-- Динамични кутийки за памет -->
+            <div class="mem-container" id="memContainer" style="display: none;"></div>
+
+            <div class="console-box" id="consoleBox">
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+        </div>
+
+        <div class="formula-container" id="formulaContainer">
+            <div class="math-display" id="mathDisplay">
+                <!-- Логическият модел се визуализира тук -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()" disabled>⏪ Назад</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">Напред ⏩</button>
+        </div>
+
+    </div>
+
+    <script>
+        const tabData = [
+            {
+                // Таб 0: Пример 1 (11 13 0)
+                steps: [
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Подготвяме два брояча и ги зануляваме: br1 (за > 10) и br2 (за < 10). Въвеждаме числата 11, 13 и 0.", 
+                        vars: [{name: "a", val: "11", hl: true}, {name: "b", val: "13", hl: true}, {name: "c", val: "0", hl: true}, {name: "br1 (>10)", val: "0"}, {name: "br2 (<10)", val: "0"}],
+                        math: "<div class='math-title'>Начално състояние</div>Числа: <span class='math-highlight'>a = 11, b = 13, c = 0</span><br>Брояч за по-големи: <span class='math-operator'>br1 = 0</span><br>Брояч за по-малки: <span class='math-operator'>br2 = 0</span>",
+                        showCon: true, conText: "11 13 0"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 2: Проверяваме първото число (a = 11). Понеже 11 е по-голямо от 10, увеличаваме първия брояч br1!", 
+                        vars: [{name: "a", val: "11", hl: true}, {name: "b", val: "13"}, {name: "c", val: "0"}, {name: "br1 (>10)", val: "1", hl: true}, {name: "br2 (<10)", val: "0"}],
+                        math: "<div class='math-title'>Проверка на първото число (a = 11)</div>11 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br1 става 1)</span><br>11 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span>",
+                        showCon: true, conText: "11 13 0"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 3: Проверяваме второто число (b = 13). То също е по-голямо от 10, затова br1 се увеличава още веднъж и става 2!", 
+                        vars: [{name: "a", val: "11"}, {name: "b", val: "13", hl: true}, {name: "c", val: "0"}, {name: "br1 (>10)", val: "2", hl: true}, {name: "br2 (<10)", val: "0"}],
+                        math: "<div class='math-title'>Проверка на второто число (b = 13)</div>13 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br1 става 2)</span><br>13 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span>",
+                        showCon: true, conText: "11 13 0"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 4: Проверяваме третото число (c = 0). То е по-малко от 10, затова увеличаваме втория брояч br2!", 
+                        vars: [{name: "a", val: "11"}, {name: "b", val: "13"}, {name: "c", val: "0", hl: true}, {name: "br1 (>10)", val: "2"}, {name: "br2 (<10)", val: "1", hl: true}],
+                        math: "<div class='math-title'>Проверка на третото число (c = 0)</div>0 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span><br>0 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br2 става 1)</span>",
+                        showCon: true, conText: "11 13 0"
+                    },
+                    { 
+                        icon: "🖨️", 
+                        text: "Стъпка 5: Отпечатваме двата брояча на екрана, разделени с интервал: 2 1.", 
+                        vars: [{name: "a", val: "11"}, {name: "b", val: "13"}, {name: "c", val: "0"}, {name: "br1 (>10)", val: "2", hl: true}, {name: "br2 (<10)", val: "1", hl: true}],
+                        math: "<div class='math-title'>Краен резултат</div>По-големи от 10: <span class='math-highlight'>2</span> | По-малки от 10: <span class='math-highlight'>1</span><span class='math-result'>Изход: 2 1</span>",
+                        showCon: true, conText: "11 13 0\n2 1"
+                    }
+                ]
+            },
+            {
+                // Таб 1: Пример 2 (0 0 17)
+                steps: [
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Зануляваме двата брояча (br1 = 0, br2 = 0) и въвеждаме числата 0, 0 и 17.", 
+                        vars: [{name: "a", val: "0", hl: true}, {name: "b", val: "0", hl: true}, {name: "c", val: "17", hl: true}, {name: "br1 (>10)", val: "0"}, {name: "br2 (<10)", val: "0"}],
+                        math: "<div class='math-title'>Начално състояние</div>Числа: <span class='math-highlight'>a = 0, b = 0, c = 17</span><br>Брояч за по-големи: <span class='math-operator'>br1 = 0</span><br>Брояч за по-малки: <span class='math-operator'>br2 = 0</span>",
+                        showCon: true, conText: "0 0 17"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 2: Първото число (a = 0) е по-малко от 10. Увеличаваме втория брояч br2 на 1.", 
+                        vars: [{name: "a", val: "0", hl: true}, {name: "b", val: "0"}, {name: "c", val: "17"}, {name: "br1 (>10)", val: "0"}, {name: "br2 (<10)", val: "1", hl: true}],
+                        math: "<div class='math-title'>Проверка на първото число (a = 0)</div>0 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span><br>0 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br2 става 1)</span>",
+                        showCon: true, conText: "0 0 17"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 3: Второто число (b = 0) също е по-малко от 10. Увеличаваме br2 на 2.", 
+                        vars: [{name: "a", val: "0"}, {name: "b", val: "0", hl: true}, {name: "c", val: "17"}, {name: "br1 (>10)", val: "0"}, {name: "br2 (<10)", val: "2", hl: true}],
+                        math: "<div class='math-title'>Проверка на второто число (b = 0)</div>0 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span><br>0 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br2 става 2)</span>",
+                        showCon: true, conText: "0 0 17"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 4: Третото число (c = 17) е по-голямо от 10. Увеличаваме първия брояч br1 на 1.", 
+                        vars: [{name: "a", val: "0"}, {name: "b", val: "0"}, {name: "c", val: "17", hl: true}, {name: "br1 (>10)", val: "1", hl: true}, {name: "br2 (<10)", val: "2"}],
+                        math: "<div class='math-title'>Проверка на третото число (c = 17)</div>17 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br1 става 1)</span><br>17 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span>",
+                        showCon: true, conText: "0 0 17"
+                    },
+                    { 
+                        icon: "🖨️", 
+                        text: "Стъпка 5: Отпечатваме резултатите (първо br1, после br2): 1 2.", 
+                        vars: [{name: "a", val: "0"}, {name: "b", val: "0"}, {name: "c", val: "17"}, {name: "br1 (>10)", val: "1", hl: true}, {name: "br2 (<10)", val: "2", hl: true}],
+                        math: "<div class='math-title'>Краен резултат</div>По-големи от 10: <span class='math-highlight'>1</span> | По-малки от 10: <span class='math-highlight'>2</span><span class='math-result'>Изход: 1 2</span>",
+                        showCon: true, conText: "0 0 17\n1 2"
+                    }
+                ]
+            },
+            {
+                // Таб 2: Пример 3 (20 8 20)
+                steps: [
+                    { 
+                        icon: "📦", 
+                        text: "Стъпка 1: Зануляваме двата брояча (br1 = 0, br2 = 0) и въвеждаме числата 20, 8 и 20.", 
+                        vars: [{name: "a", val: "20", hl: true}, {name: "b", val: "8", hl: true}, {name: "c", val: "20", hl: true}, {name: "br1 (>10)", val: "0"}, {name: "br2 (<10)", val: "0"}],
+                        math: "<div class='math-title'>Начално състояние</div>Числа: <span class='math-highlight'>a = 20, b = 8, c = 20</span><br>Брояч за по-големи: <span class='math-operator'>br1 = 0</span><br>Брояч за по-малки: <span class='math-operator'>br2 = 0</span>",
+                        showCon: true, conText: "20 8 20"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 2: Първото число (a = 20) е по-голямо от 10. Увеличаваме br1 на 1.", 
+                        vars: [{name: "a", val: "20", hl: true}, {name: "b", val: "8"}, {name: "c", val: "20"}, {name: "br1 (>10)", val: "1", hl: true}, {name: "br2 (<10)", val: "0"}],
+                        math: "<div class='math-title'>Проверка на първото число (a = 20)</div>20 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br1 става 1)</span><br>20 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span>",
+                        showCon: true, conText: "20 8 20"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 3: Второто число (b = 8) е по-малко от 10. Увеличаваме втория брояч br2 на 1.", 
+                        vars: [{name: "a", val: "20"}, {name: "b", val: "8", hl: true}, {name: "c", val: "20"}, {name: "br1 (>10)", val: "1"}, {name: "br2 (<10)", val: "1", hl: true}],
+                        math: "<div class='math-title'>Проверка на второто число (b = 8)</div>8 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span><br>8 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br2 става 1)</span>",
+                        showCon: true, conText: "20 8 20"
+                    },
+                    { 
+                        icon: "🔍", 
+                        text: "Стъпка 4: Третото число (c = 20) е по-голямо от 10. Увеличаваме br1 на 2.", 
+                        vars: [{name: "a", val: "20"}, {name: "b", val: "8"}, {name: "c", val: "20", hl: true}, {name: "br1 (>10)", val: "2", hl: true}, {name: "br2 (<10)", val: "1"}],
+                        math: "<div class='math-title'>Проверка на третото число (c = 20)</div>20 &gt; 10 <span class='math-operator'>&rarr;</span> <span class='math-true'>ВЯРНО (br1 става 2)</span><br>20 &lt; 10 <span class='math-operator'>&rarr;</span> <span class='math-false'>ЛЪЖА</span>",
+                        showCon: true, conText: "20 8 20"
+                    },
+                    { 
+                        icon: "🖨️", 
+                        text: "Стъпка 5: Отпечатваме крайния резултат на екрана: 2 1.", 
+                        vars: [{name: "a", val: "20"}, {name: "b", val: "8"}, {name: "c", val: "20"}, {name: "br1 (>10)", val: "2", hl: true}, {name: "br2 (<10)", val: "1", hl: true}],
+                        math: "<div class='math-title'>Краен резултат</div>По-големи от 10: <span class='math-highlight'>2</span> | По-малки от 10: <span class='math-highlight'>1</span><span class='math-result'>Изход: 2 1</span>",
+                        showCon: true, conText: "20 8 20\n2 1"
+                    }
+                ]
+            }
+        ];
+
+        let currentTab = 0;
+        let currentStep = 0;
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            currentStep = 0;
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((btn, i) => {
+                if(i === tabIndex) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            
+            updateUI();
+        }
+
+        function updateUI() {
+            const conBox = document.getElementById('consoleBox');
+            const conOut = document.getElementById('consoleOutput');
+            const stepIcon = document.getElementById('stepIcon');
+            const mathDisplay = document.getElementById('mathDisplay');
+            const memContainer = document.getElementById('memContainer');
+            
+            const step = tabData[currentTab].steps[currentStep];
+            
+            document.getElementById('vizText').innerText = step.text;
+            mathDisplay.innerHTML = step.math;
+            
+            stepIcon.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                stepIcon.innerText = step.icon;
+                stepIcon.style.transform = 'scale(1)';
+            }, 150);
+
+            if (step.vars && step.vars.length > 0) {
+                memContainer.style.display = 'flex';
+                memContainer.innerHTML = '';
+                step.vars.forEach(v => {
+                    const box = document.createElement('div');
+                    box.className = 'mem-box' + (v.hl ? ' highlight' : '');
+                    box.innerHTML = `<div class="mem-name">${v.name}</div><div class="mem-val">${v.val}</div>`;
+                    memContainer.appendChild(box);
+                });
+            } else {
+                memContainer.style.display = 'none';
+            }
+
+            if (step.showCon) {
+                conBox.style.display = 'block';
+                conOut.innerText = step.conText;
+            } else { 
+                conBox.style.display = 'none'; 
+            }
+
+            document.getElementById('prevBtn').disabled = currentStep <= 0;
+            document.getElementById('nextBtn').disabled = currentStep >= tabData[currentTab].steps.length - 1;
+        }
+
+        function nextStep() { 
+            if (currentStep < tabData[currentTab].steps.length - 1) { 
+                currentStep++; 
+                updateUI(); 
+            } 
+        }
+        function prevStep() { 
+            if (currentStep > 0) { 
+                currentStep--; 
+                updateUI(); 
+            } 
+        }
+
+        const resizer = document.getElementById('resizer');
+        const leftPanel = document.getElementById('leftPanel');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            let newWidthPercent = (e.clientX / window.innerWidth) * 100;
+            if (newWidthPercent > 20 && newWidthPercent < 80) {
+                leftPanel.style.flex = `0 0 ${newWidthPercent}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto'; 
+            }
+        });
+
+        // Първоначално зареждане
+        updateUI();
+    </script>
+</body>
+</html>
